@@ -27,6 +27,8 @@ export type AuditAction =
   | 'project.created'
   | 'project.updated'
   | 'project.status_changed'
+  | 'project.member_added'
+  | 'project.member_removed'
   | 'project.deleted'
 
   // Finances (Phase 4)

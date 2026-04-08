@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { LoginForm } from './login-form'
 
 export const metadata: Metadata = {
-  title: 'Acesso — GF Arquitetura',
+  title: 'Acesso — GFA Projetos',
 }
 
 export default function LoginPage() {
@@ -15,7 +15,7 @@ export default function LoginPage() {
             GF
           </p>
           <p className="text-[0.6rem] uppercase tracking-[0.45em] text-zinc-500 mt-2">
-            Arquitetura
+            Projetos
           </p>
         </div>
 
@@ -28,7 +28,7 @@ export default function LoginPage() {
         </div>
 
         <p className="text-center text-[0.65rem] text-zinc-700 mt-8 tracking-wide">
-          © 2026 GF Arquitetura
+          © 2026 GFA Projetos
         </p>
       </div>
     </main>

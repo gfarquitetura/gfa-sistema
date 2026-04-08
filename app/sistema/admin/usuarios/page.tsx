@@ -7,7 +7,7 @@ import { UsersTable } from './_components/users-table'
 import { CreateUserDialog } from './_components/create-user-dialog'
 
 export const metadata: Metadata = {
-  title: 'Usuários — GF Arquitetura',
+  title: 'Usuários — GFA Projetos',
 }
 
 export default async function UsuariosPage() {

@@ -5,7 +5,7 @@ import { hasPermission } from '@/lib/auth/roles'
 import { ClientForm } from '../_components/client-form'
 
 export const metadata: Metadata = {
-  title: 'Novo Cliente — GF Arquitetura',
+  title: 'Novo Cliente — GFA Projetos',
 }
 
 export default async function NovoClientePage() {

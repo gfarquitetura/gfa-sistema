@@ -96,6 +96,73 @@ export type Database = {
         }
         Relationships: []
       }
+      project_members: {
+        Row: {
+          id: string
+          project_id: string
+          profile_id: string
+          member_role: 'responsible' | 'collaborator'
+          joined_at: string
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          profile_id: string
+          member_role?: 'responsible' | 'collaborator'
+          joined_at?: string
+        }
+        Update: {
+          member_role?: 'responsible' | 'collaborator'
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          id: string
+          code: string
+          name: string
+          description: string | null
+          client_id: string
+          status: 'proposal' | 'active' | 'paused' | 'completed' | 'cancelled'
+          contract_value: number
+          start_date: string | null
+          end_date: string | null
+          deadline: string | null
+          notes: string | null
+          created_by: string | null
+          updated_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          code?: string
+          name: string
+          description?: string | null
+          client_id: string
+          status?: 'proposal' | 'active' | 'paused' | 'completed' | 'cancelled'
+          contract_value?: number
+          start_date?: string | null
+          end_date?: string | null
+          deadline?: string | null
+          notes?: string | null
+          created_by?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          name?: string
+          description?: string | null
+          client_id?: string
+          status?: 'proposal' | 'active' | 'paused' | 'completed' | 'cancelled'
+          contract_value?: number
+          start_date?: string | null
+          end_date?: string | null
+          deadline?: string | null
+          notes?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           id: string
@@ -135,6 +202,9 @@ export type Database = {
 }
 
 // Convenience aliases
-export type Profile  = Database['public']['Tables']['profiles']['Row']
-export type AuditLog = Database['public']['Tables']['audit_logs']['Row']
-export type Client   = Database['public']['Tables']['clients']['Row']
+export type Profile       = Database['public']['Tables']['profiles']['Row']
+export type AuditLog      = Database['public']['Tables']['audit_logs']['Row']
+export type Client        = Database['public']['Tables']['clients']['Row']
+export type Project       = Database['public']['Tables']['projects']['Row']
+export type ProjectMember = Database['public']['Tables']['project_members']['Row']
+export type ProjectStatus = Project['status']

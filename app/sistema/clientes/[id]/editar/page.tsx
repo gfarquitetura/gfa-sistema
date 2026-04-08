@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { id } = await params
   const supabase = await createClient()
   const { data } = await supabase.from('clients').select('name').eq('id', id).single()
-  return { title: data ? `Editar ${data.name} — GF Arquitetura` : 'Editar Cliente' }
+  return { title: data ? `Editar ${data.name} — GFA Projetos` : 'Editar Cliente' }
 }
 
 export default async function EditarClientePage({ params }: PageProps) {

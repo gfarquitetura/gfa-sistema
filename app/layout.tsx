@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GF Arquitetura — Sistema",
+  title: "GFA Projetos — Sistema",
   description: "Sistema de gestão financeira e operacional",
 };
 

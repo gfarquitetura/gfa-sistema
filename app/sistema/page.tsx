@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Painel — GF Arquitetura',
+  title: 'Painel — GFA Projetos',
 }
 
 export default function SistemaPage() {

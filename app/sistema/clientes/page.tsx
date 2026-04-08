@@ -8,7 +8,7 @@ import { ClientsFilters } from './_components/clients-filters'
 import { ExportButton } from './_components/export-button'
 
 export const metadata: Metadata = {
-  title: 'Clientes — GF Arquitetura',
+  title: 'Clientes — GFA Projetos',
 }
 
 const PAGE_SIZE = 20

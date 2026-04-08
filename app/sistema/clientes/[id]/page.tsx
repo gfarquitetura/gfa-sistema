@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { id } = await params
   const supabase = await createClient()
   const { data } = await supabase.from('clients').select('name').eq('id', id).single()
-  return { title: data ? `${data.name} — GF Arquitetura` : 'Cliente' }
+  return { title: data ? `${data.name} — GFA Projetos` : 'Cliente' }
 }
 
 export default async function ClienteDetailPage({ params }: PageProps) {

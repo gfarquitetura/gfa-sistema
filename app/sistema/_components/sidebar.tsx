@@ -39,7 +39,7 @@ export function Sidebar({ role, userEmail, fullName }: SidebarProps) {
       {/* Logo */}
       <div className="mb-8 px-2">
         <p className="text-2xl font-extralight tracking-tight text-zinc-100 leading-none">GF</p>
-        <p className="text-[0.55rem] uppercase tracking-[0.4em] text-zinc-600 mt-1">Arquitetura</p>
+        <p className="text-[0.55rem] uppercase tracking-[0.4em] text-zinc-600 mt-1">Projetos</p>
       </div>
 
       {/* Nav */}
