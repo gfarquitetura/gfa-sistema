@@ -30,7 +30,8 @@ export type Database = {
           ip_address?: string | null
           created_at?: string
         }
-        Update: never // immutable
+        Update: Record<string, never> // immutable
+        Relationships: []
       }
       clients: {
         Row: {
@@ -93,6 +94,7 @@ export type Database = {
           is_active?: boolean
           updated_by?: string | null
         }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -122,11 +124,13 @@ export type Database = {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
     }
     Views: Record<string, never>
     Functions: Record<string, never>
     Enums: Record<string, never>
+    CompositeTypes: Record<string, never>
   }
 }
 
