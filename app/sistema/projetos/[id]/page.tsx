@@ -10,6 +10,7 @@ import {
 } from '@/lib/projects/format'
 import { StatusButton } from '../_components/status-button'
 import { TeamSection } from '../_components/team-section'
+import { ProjectFinancials } from './_components/project-financials'
 import { AuditTrail } from '@/app/sistema/clientes/[id]/_components/audit-trail'
 import type { Project, ProjectStatus } from '@/lib/types/database'
 
@@ -154,13 +155,13 @@ export default async function ProjetoDetailPage({ params }: PageProps) {
         />
       </div>
 
-      {/* Financials — Phase 4 stub */}
+      {/* Financials */}
       <div className="border border-zinc-800 rounded-lg p-5 mb-8">
-        <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">Financeiro</h2>
-        <p className="text-sm text-zinc-600">
-          Resumo financeiro disponível na fase 4.{' '}
-          <span className="text-zinc-700 text-xs">(em breve)</span>
-        </p>
+        <ProjectFinancials
+          projectId={id}
+          contractValue={project.contract_value}
+          canManage={canManage}
+        />
       </div>
 
       {/* Notes */}

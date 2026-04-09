@@ -163,6 +163,65 @@ export type Database = {
         }
         Relationships: []
       }
+      expense_categories: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          is_active: boolean
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          is_active?: boolean
+        }
+        Update: {
+          name?: string
+          description?: string | null
+          is_active?: boolean
+        }
+        Relationships: []
+      }
+      expenses: {
+        Row: {
+          id: string
+          project_id: string | null
+          category_id: string | null
+          description: string
+          notes: string | null
+          amount: number
+          expense_date: string
+          receipt_url: string | null
+          created_by: string | null
+          updated_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          project_id?: string | null
+          category_id?: string | null
+          description: string
+          notes?: string | null
+          amount: number
+          expense_date?: string
+          receipt_url?: string | null
+          created_by?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          project_id?: string | null
+          category_id?: string | null
+          description?: string
+          notes?: string | null
+          amount?: number
+          expense_date?: string
+          receipt_url?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           id: string
@@ -206,5 +265,7 @@ export type Profile       = Database['public']['Tables']['profiles']['Row']
 export type AuditLog      = Database['public']['Tables']['audit_logs']['Row']
 export type Client        = Database['public']['Tables']['clients']['Row']
 export type Project       = Database['public']['Tables']['projects']['Row']
-export type ProjectMember = Database['public']['Tables']['project_members']['Row']
-export type ProjectStatus = Project['status']
+export type ProjectMember    = Database['public']['Tables']['project_members']['Row']
+export type ProjectStatus    = Project['status']
+export type Expense          = Database['public']['Tables']['expenses']['Row']
+export type ExpenseCategory  = Database['public']['Tables']['expense_categories']['Row']
