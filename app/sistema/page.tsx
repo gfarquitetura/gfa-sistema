@@ -140,13 +140,15 @@ export default async function SistemaPage() {
   const STATUS_ORDER: ProjectStatus[] = ['proposal', 'active', 'paused', 'completed', 'cancelled']
   const maxTeamMinutes = teamHours[0]?.minutes ?? 1
 
+  const BRAND = '#8B1A1A'
+
   return (
     <div className="p-8 max-w-6xl">
 
       {/* Greeting */}
-      <div className="mb-8">
-        <h1 className="text-xl font-light text-zinc-100">Olá, {firstName}</h1>
-        <p className="text-sm text-zinc-500 mt-1">
+      <div className="mb-8 pb-6 border-b border-zinc-800/60">
+        <h1 className="text-2xl font-light text-zinc-100 tracking-tight">Olá, {firstName}</h1>
+        <p className="text-sm text-zinc-500 mt-1 capitalize">
           {new Date().toLocaleDateString('pt-BR', {
             weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
           })}
@@ -155,35 +157,39 @@ export default async function SistemaPage() {
 
       {/* KPI cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Link href="/sistema/clientes" className="border border-zinc-800 rounded-lg p-5 hover:border-zinc-600 transition-colors">
-          <p className="text-xs uppercase tracking-widest text-zinc-500 mb-3">Clientes ativos</p>
-          <p className="text-3xl font-light text-zinc-100">{activeClients ?? 0}</p>
-          <p className="text-xs text-zinc-600 mt-1">de {totalClients ?? 0} cadastrados</p>
-        </Link>
+        {([
+          { href: '/sistema/clientes', label: 'Clientes ativos', value: String(activeClients ?? 0), sub: `de ${totalClients ?? 0} cadastrados` },
+          { href: '/sistema/projetos', label: 'Projetos ativos', value: String(statusCounts['active'] ?? 0), sub: `de ${totalProjects ?? 0} no total` },
+        ] as const).map((card) => (
+          <Link
+            key={card.href}
+            href={card.href}
+            className="group relative border border-zinc-800 rounded-xl p-5 bg-zinc-900/30 hover:border-zinc-700 hover:bg-zinc-900/60 transition-all overflow-hidden"
+          >
+            <div className="absolute top-0 left-0 w-0.5 h-full opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: BRAND }} />
+            <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500 mb-3">{card.label}</p>
+            <p className="text-3xl font-light text-zinc-100">{card.value}</p>
+            <p className="text-xs text-zinc-600 mt-1">{card.sub}</p>
+          </Link>
+        ))}
 
-        <Link href="/sistema/projetos" className="border border-zinc-800 rounded-lg p-5 hover:border-zinc-600 transition-colors">
-          <p className="text-xs uppercase tracking-widest text-zinc-500 mb-3">Projetos ativos</p>
-          <p className="text-3xl font-light text-zinc-100">{statusCounts['active'] ?? 0}</p>
-          <p className="text-xs text-zinc-600 mt-1">de {totalProjects ?? 0} no total</p>
-        </Link>
-
-        <div className="border border-zinc-800 rounded-lg p-5">
-          <p className="text-xs uppercase tracking-widest text-zinc-500 mb-3">Carteira ativa</p>
+        <div className="border border-zinc-800 rounded-xl p-5 bg-zinc-900/30">
+          <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500 mb-3">Carteira ativa</p>
           <p className="text-2xl font-light text-zinc-100 leading-tight">{formatBRL(activeContractValue)}</p>
           <p className="text-xs text-zinc-600 mt-1">em projetos ativos</p>
         </div>
 
         {canSeeFinances ? (
-          <div className="border border-zinc-800 rounded-lg p-5">
-            <p className="text-xs uppercase tracking-widest text-zinc-500 mb-3">Margem ativa</p>
+          <div className="border border-zinc-800 rounded-xl p-5 bg-zinc-900/30">
+            <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500 mb-3">Margem ativa</p>
             <p className={`text-2xl font-light leading-tight ${overallMargin >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
               {formatBRL(overallMargin)}
             </p>
             <p className="text-xs text-zinc-600 mt-1">receita − despesas</p>
           </div>
         ) : (
-          <div className="border border-zinc-800 rounded-lg p-5">
-            <p className="text-xs uppercase tracking-widest text-zinc-500 mb-3">Carteira total</p>
+          <div className="border border-zinc-800 rounded-xl p-5 bg-zinc-900/30">
+            <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500 mb-3">Carteira total</p>
             <p className="text-2xl font-light text-zinc-100 leading-tight">{formatBRL(totalContractValue)}</p>
             <p className="text-xs text-zinc-600 mt-1">todos os projetos</p>
           </div>
@@ -193,14 +199,14 @@ export default async function SistemaPage() {
       {/* Financial health */}
       {canSeeFinances && (
         <div className="grid grid-cols-3 gap-4 mb-8">
-          <Link href="/sistema/financeiro" className="border border-zinc-800 rounded-lg p-5 hover:border-zinc-600 transition-colors">
-            <p className="text-xs uppercase tracking-widest text-zinc-500 mb-3">Total de despesas</p>
+          <Link href="/sistema/financeiro" className="border border-zinc-800 rounded-xl p-5 bg-zinc-900/30 hover:border-zinc-700 transition-all">
+            <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500 mb-3">Total de despesas</p>
             <p className="text-2xl font-light text-zinc-100">{formatBRL(totalExpenses)}</p>
             <p className="text-xs text-zinc-600 mt-1">todos os registros</p>
           </Link>
 
-          <div className="border border-zinc-800 rounded-lg p-5">
-            <p className="text-xs uppercase tracking-widest text-zinc-500 mb-3">Receita ativa</p>
+          <div className="border border-zinc-800 rounded-xl p-5 bg-zinc-900/30">
+            <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500 mb-3">Receita ativa</p>
             <p className="text-2xl font-light text-zinc-100">{formatBRL(activeContractValue)}</p>
             <p className="text-xs text-zinc-600 mt-1">contratos em andamento</p>
           </div>
@@ -208,9 +214,9 @@ export default async function SistemaPage() {
           {canSeeTimesheets && (
             <Link
               href={pendingApprovals > 0 ? '/sistema/apontamentos/aprovacoes' : '/sistema/apontamentos'}
-              className="border border-zinc-800 rounded-lg p-5 hover:border-zinc-600 transition-colors"
+              className="border border-zinc-800 rounded-xl p-5 bg-zinc-900/30 hover:border-zinc-700 transition-all"
             >
-              <p className="text-xs uppercase tracking-widest text-zinc-500 mb-3">Aprovações pendentes</p>
+              <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500 mb-3">Aprovações pendentes</p>
               <p className={`text-2xl font-light ${pendingApprovals > 0 ? 'text-yellow-400' : 'text-zinc-100'}`}>
                 {pendingApprovals}
               </p>
@@ -220,26 +226,29 @@ export default async function SistemaPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Project status breakdown */}
-        <section className="border border-zinc-800 rounded-lg p-5">
-          <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-5">Projetos por status</h2>
+        <section className="border border-zinc-800 rounded-xl p-5 bg-zinc-900/30">
+          <h2 className="text-[0.65rem] uppercase tracking-widest text-zinc-500 mb-5 font-medium">Projetos por status</h2>
           <div className="flex flex-col gap-3">
             {STATUS_ORDER.map((s) => {
               const count = statusCounts[s] ?? 0
               const pct = totalProjects ? Math.round((count / totalProjects) * 100) : 0
               return (
                 <Link key={s} href={`/sistema/projetos?status=${s}`} className="group">
-                  <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center justify-between mb-1.5">
                     <span className={`px-2 py-0.5 text-[0.6rem] uppercase tracking-wider rounded border ${STATUS_COLORS[s]}`}>
                       {STATUS_LABELS[s]}
                     </span>
-                    <span className="text-sm text-zinc-300">{count}</span>
+                    <span className="text-sm text-zinc-300 tabular-nums">{count}</span>
                   </div>
                   <div className="h-1 rounded-full bg-zinc-800">
                     <div
-                      className="h-1 rounded-full bg-zinc-500 group-hover:bg-zinc-400 transition-colors"
-                      style={{ width: `${pct}%` }}
+                      className="h-1 rounded-full transition-all"
+                      style={{
+                        width: `${pct}%`,
+                        background: s === 'active' ? BRAND : '#52525b',
+                      }}
                     />
                   </div>
                 </Link>
@@ -249,19 +258,19 @@ export default async function SistemaPage() {
         </section>
 
         {/* Recent projects */}
-        <section className="border border-zinc-800 rounded-lg p-5 lg:col-span-2">
+        <section className="border border-zinc-800 rounded-xl p-5 bg-zinc-900/30 lg:col-span-2">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-xs uppercase tracking-widest text-zinc-500">Projetos recentes</h2>
-            <Link href="/sistema/projetos" className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">
+            <h2 className="text-[0.65rem] uppercase tracking-widest text-zinc-500 font-medium">Projetos recentes</h2>
+            <Link href="/sistema/projetos" className="text-xs transition-colors hover:opacity-80" style={{ color: BRAND }}>
               Ver todos →
             </Link>
           </div>
           {!recentProjects || recentProjects.length === 0 ? (
             <p className="text-sm text-zinc-600">Nenhum projeto cadastrado.</p>
           ) : (
-            <ul className="flex flex-col divide-y divide-zinc-800">
+            <ul className="flex flex-col divide-y divide-zinc-800/70">
               {recentProjects.map((p) => (
-                <li key={p.id} className="py-3 flex items-center justify-between gap-4">
+                <li key={p.id} className="py-3 flex items-center justify-between gap-4 group">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
                       <span className="text-[0.6rem] font-mono text-zinc-600">{p.code}</span>
@@ -271,14 +280,14 @@ export default async function SistemaPage() {
                     </div>
                     <Link
                       href={`/sistema/projetos/${p.id}`}
-                      className="text-sm text-zinc-300 hover:text-white transition-colors truncate block"
+                      className="text-sm text-zinc-300 group-hover:text-white transition-colors truncate block"
                     >
                       {p.name}
                     </Link>
                   </div>
                   <div className="text-right shrink-0">
                     {p.contract_value > 0 && (
-                      <p className="text-xs text-zinc-400">{formatBRL(p.contract_value)}</p>
+                      <p className="text-xs text-zinc-400 tabular-nums">{formatBRL(p.contract_value)}</p>
                     )}
                     {p.deadline && (
                       <p className="text-[0.65rem] text-zinc-600 mt-0.5">{formatDateBR(p.deadline)}</p>
@@ -293,27 +302,27 @@ export default async function SistemaPage() {
 
       {/* Project profitability */}
       {canSeeFinances && profitability.length > 0 && (
-        <section className="border border-zinc-800 rounded-lg p-5 mb-8">
+        <section className="border border-zinc-800 rounded-xl p-5 bg-zinc-900/30 mb-8">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-xs uppercase tracking-widest text-zinc-500">Rentabilidade — projetos ativos</h2>
-            <Link href="/sistema/projetos?status=active" className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">
+            <h2 className="text-[0.65rem] uppercase tracking-widest text-zinc-500 font-medium">Rentabilidade — projetos ativos</h2>
+            <Link href="/sistema/projetos?status=active" className="text-xs transition-colors hover:opacity-80" style={{ color: BRAND }}>
               Ver projetos →
             </Link>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr>
+                <tr className="border-b border-zinc-800">
                   <th className="pb-3 text-[0.65rem] uppercase tracking-wider text-zinc-600 font-medium">Projeto</th>
                   <th className="pb-3 text-[0.65rem] uppercase tracking-wider text-zinc-600 font-medium text-right">Receita</th>
                   <th className="pb-3 text-[0.65rem] uppercase tracking-wider text-zinc-600 font-medium text-right">Despesas</th>
                   <th className="pb-3 text-[0.65rem] uppercase tracking-wider text-zinc-600 font-medium text-right">Margem</th>
-                  <th className="pb-3 pr-2 w-32"></th>
+                  <th className="pb-3 w-28" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800">
+              <tbody>
                 {profitability.map((p) => (
-                  <tr key={p.id} className="group">
+                  <tr key={p.id} className="border-b border-zinc-800/60 last:border-0">
                     <td className="py-3 pr-4">
                       <Link href={`/sistema/projetos/${p.id}`} className="hover:text-white transition-colors">
                         <span className="text-[0.65rem] font-mono text-zinc-600 mr-2">{p.code}</span>
@@ -330,17 +339,15 @@ export default async function SistemaPage() {
                       {p.contract_value > 0 ? (
                         <>
                           {formatBRL(p.margin)}
-                          {p.pct !== null && (
-                            <span className="text-xs ml-1 opacity-70">({p.pct}%)</span>
-                          )}
+                          {p.pct !== null && <span className="text-xs ml-1 opacity-60">({p.pct}%)</span>}
                         </>
                       ) : '—'}
                     </td>
-                    <td className="py-3 pl-4 w-32">
+                    <td className="py-3 pl-4 w-28">
                       {p.contract_value > 0 && p.expenses > 0 && (
                         <div className="h-1 rounded-full bg-zinc-800 overflow-hidden">
                           <div
-                            className={`h-full rounded-full ${p.margin >= 0 ? 'bg-emerald-600' : 'bg-red-600'}`}
+                            className={`h-full rounded-full ${p.margin >= 0 ? 'bg-emerald-700' : 'bg-red-800'}`}
                             style={{ width: `${Math.min(100, Math.max(0, (p.expenses / p.contract_value) * 100))}%` }}
                           />
                         </div>
@@ -356,12 +363,12 @@ export default async function SistemaPage() {
 
       {/* Team hours this month */}
       {canSeeTimesheets && teamHours.length > 0 && (
-        <section className="border border-zinc-800 rounded-lg p-5 mb-8">
+        <section className="border border-zinc-800 rounded-xl p-5 bg-zinc-900/30 mb-8">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-xs uppercase tracking-widest text-zinc-500">
+            <h2 className="text-[0.65rem] uppercase tracking-widest text-zinc-500 font-medium">
               Horas aprovadas — {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
             </h2>
-            <Link href="/sistema/apontamentos/aprovacoes" className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">
+            <Link href="/sistema/apontamentos/aprovacoes" className="text-xs transition-colors hover:opacity-80" style={{ color: BRAND }}>
               Aprovações →
             </Link>
           </div>
@@ -371,12 +378,12 @@ export default async function SistemaPage() {
               const pct = Math.round((minutes / maxTeamMinutes) * 100)
               return (
                 <div key={profile_id}>
-                  <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center justify-between mb-1.5">
                     <span className="text-sm text-zinc-300 truncate max-w-[60%]">{name}</span>
                     <span className="text-xs text-zinc-500 font-mono">{minutesToDisplay(minutes)}</span>
                   </div>
                   <div className="h-1 rounded-full bg-zinc-800">
-                    <div className="h-1 rounded-full bg-zinc-500" style={{ width: `${pct}%` }} />
+                    <div className="h-1 rounded-full" style={{ width: `${pct}%`, background: BRAND }} />
                   </div>
                 </div>
               )
@@ -386,10 +393,10 @@ export default async function SistemaPage() {
       )}
 
       {/* Recent clients */}
-      <section className="border border-zinc-800 rounded-lg p-5">
+      <section className="border border-zinc-800 rounded-xl p-5 bg-zinc-900/30">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-xs uppercase tracking-widest text-zinc-500">Clientes recentes</h2>
-          <Link href="/sistema/clientes" className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">
+          <h2 className="text-[0.65rem] uppercase tracking-widest text-zinc-500 font-medium">Clientes recentes</h2>
+          <Link href="/sistema/clientes" className="text-xs transition-colors hover:opacity-80" style={{ color: BRAND }}>
             Ver todos →
           </Link>
         </div>

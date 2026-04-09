@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation'
 import type { Role } from '@/lib/types/database'
 import { hasPermission } from '@/lib/auth/roles'
 
-// ── Inline SVG icons (Heroicons outline 24px) ─────────────
 function Icon({ name, className = 'w-4 h-4' }: { name: string; className?: string }) {
   const paths: Record<string, React.ReactNode> = {
     home: (
@@ -35,37 +34,22 @@ function Icon({ name, className = 'w-4 h-4' }: { name: string; className?: strin
   }
 
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={1.5}
-      stroke="currentColor"
-      className={className}
-      aria-hidden="true"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+      strokeWidth={1.5} stroke="currentColor" className={className} aria-hidden="true">
       {paths[name]}
     </svg>
   )
 }
 
-// ── Nav items ──────────────────────────────────────────────
-interface NavItem {
-  label: string
-  href: string
-  icon: string
-  permission?: Parameters<typeof hasPermission>[1]
-}
-
-const NAV_ITEMS: NavItem[] = [
-  { label: 'Painel',       href: '/sistema',                    icon: 'home' },
-  { label: 'Clientes',     href: '/sistema/clientes',           icon: 'users',     permission: 'clients:read' },
-  { label: 'Projetos',     href: '/sistema/projetos',           icon: 'folder',    permission: 'projects:read' },
-  { label: 'Financeiro',   href: '/sistema/financeiro',         icon: 'banknotes', permission: 'finances:read' },
-  { label: 'Apontamentos', href: '/sistema/apontamentos',       icon: 'clock',     permission: 'timesheets:submit' },
-  { label: 'Relatórios',   href: '/sistema/relatorios',         icon: 'chart',     permission: 'reports:read' },
-  { label: 'Usuários',     href: '/sistema/admin/usuarios',     icon: 'cog',       permission: 'users:manage' },
-]
+const NAV_ITEMS = [
+  { label: 'Painel',       href: '/sistema',                icon: 'home' },
+  { label: 'Clientes',     href: '/sistema/clientes',       icon: 'users',     permission: 'clients:read' },
+  { label: 'Projetos',     href: '/sistema/projetos',       icon: 'folder',    permission: 'projects:read' },
+  { label: 'Financeiro',   href: '/sistema/financeiro',     icon: 'banknotes', permission: 'finances:read' },
+  { label: 'Apontamentos', href: '/sistema/apontamentos',   icon: 'clock',     permission: 'timesheets:submit' },
+  { label: 'Relatórios',   href: '/sistema/relatorios',     icon: 'chart',     permission: 'reports:read' },
+  { label: 'Usuários',     href: '/sistema/admin/usuarios', icon: 'cog',       permission: 'users:manage' },
+] as const
 
 interface SidebarProps {
   role: Role
@@ -77,7 +61,7 @@ export function Sidebar({ role, userEmail, fullName }: SidebarProps) {
   const pathname = usePathname()
 
   const visibleItems = NAV_ITEMS.filter(
-    (item) => !item.permission || hasPermission(role, item.permission)
+    (item) => !('permission' in item) || hasPermission(role, item.permission as Parameters<typeof hasPermission>[1])
   )
 
   const initials = fullName
@@ -85,13 +69,21 @@ export function Sidebar({ role, userEmail, fullName }: SidebarProps) {
     : userEmail.slice(0, 2).toUpperCase()
 
   return (
-    <aside className="flex flex-col w-56 min-h-screen bg-zinc-950 border-r border-zinc-800/60 px-3 py-5">
+    <aside className="flex flex-col w-56 min-h-screen bg-zinc-950 border-r border-zinc-800/50 px-3 py-5">
 
-      {/* Logo */}
-      <div className="mb-7 px-3 pt-1">
-        <div className="flex items-baseline gap-1.5">
-          <span className="text-xl font-semibold tracking-tight text-zinc-100">GFA</span>
-          <span className="text-[0.6rem] uppercase tracking-[0.3em] text-zinc-500">Projetos</span>
+      {/* Logo — mirrors brand mark */}
+      <div className="mb-7 px-2 pt-1">
+        <div className="flex items-center gap-0.5">
+          <div
+            className="flex items-center justify-center rounded-[3px] shrink-0"
+            style={{ width: 26, height: 26, background: '#8B1A1A' }}
+          >
+            <span className="text-white font-bold text-sm leading-none select-none">G</span>
+          </div>
+          <span className="font-bold text-zinc-100 text-lg leading-none ml-0.5 select-none">FA</span>
+          <span className="text-[0.5rem] uppercase tracking-[0.35em] text-zinc-600 ml-2 self-end mb-0.5 select-none">
+            Projetos
+          </span>
         </div>
       </div>
 
@@ -109,13 +101,16 @@ export function Sidebar({ role, userEmail, fullName }: SidebarProps) {
               href={item.href}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors ${
                 active
-                  ? 'bg-zinc-800 text-zinc-100'
+                  ? 'bg-zinc-800/80 text-zinc-100'
                   : 'text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900'
               }`}
             >
               <Icon
                 name={item.icon}
-                className={`w-[1.1rem] h-[1.1rem] shrink-0 ${active ? 'text-blue-400' : ''}`}
+                className={`w-[1.05rem] h-[1.05rem] shrink-0 transition-colors ${
+                  active ? '' : ''
+                }`}
+                {...(active ? { style: { color: '#C0392B' } } : {})}
               />
               {item.label}
             </Link>
@@ -124,10 +119,15 @@ export function Sidebar({ role, userEmail, fullName }: SidebarProps) {
       </nav>
 
       {/* User */}
-      <div className="border-t border-zinc-800/60 pt-4 mt-4 px-1">
+      <div className="border-t border-zinc-800/50 pt-4 mt-4 px-1">
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-7 h-7 rounded-full bg-zinc-800 flex items-center justify-center shrink-0">
-            <span className="text-[0.6rem] font-semibold text-zinc-300">{initials}</span>
+          <div
+            className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
+            style={{ background: '#3D0A0A', border: '1px solid #6B1A1A' }}
+          >
+            <span className="text-[0.6rem] font-semibold" style={{ color: '#F87171' }}>
+              {initials}
+            </span>
           </div>
           <div className="min-w-0">
             <p className="text-xs text-zinc-300 truncate leading-tight">{fullName || userEmail}</p>

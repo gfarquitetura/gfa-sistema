@@ -74,16 +74,16 @@ export default async function FinanceiroPage({ searchParams }: PageProps) {
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="border border-zinc-800 rounded-lg p-5">
-          <p className="text-xs uppercase tracking-widest text-zinc-500 mb-3">Total de despesas</p>
+        <div className="border border-zinc-800 rounded-xl p-5 bg-zinc-900/30">
+          <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500 mb-3">Total de despesas</p>
           <p className="text-2xl font-light text-zinc-100">{formatBRL(totalSpend)}</p>
         </div>
-        <div className="border border-zinc-800 rounded-lg p-5">
-          <p className="text-xs uppercase tracking-widest text-zinc-500 mb-3">Alocado em projetos</p>
+        <div className="border border-zinc-800 rounded-xl p-5 bg-zinc-900/30">
+          <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500 mb-3">Alocado em projetos</p>
           <p className="text-2xl font-light text-zinc-100">{formatBRL(projectSpend)}</p>
         </div>
-        <div className="border border-zinc-800 rounded-lg p-5">
-          <p className="text-xs uppercase tracking-widest text-zinc-500 mb-3">Overhead geral</p>
+        <div className="border border-zinc-800 rounded-xl p-5 bg-zinc-900/30">
+          <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500 mb-3">Overhead geral</p>
           <p className="text-2xl font-light text-zinc-100">{formatBRL(overheadSpend)}</p>
         </div>
       </div>

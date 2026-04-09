@@ -56,10 +56,7 @@ export default async function ProjetosPage({ searchParams }: PageProps) {
           </p>
         </div>
         {canManage && (
-          <Link
-            href="/sistema/projetos/novo"
-            className="px-4 py-2 bg-zinc-100 text-zinc-950 text-xs font-semibold uppercase tracking-widest rounded hover:bg-white transition-colors"
-          >
+          <Link href="/sistema/projetos/novo" className="btn-primary">
             Novo projeto
           </Link>
         )}

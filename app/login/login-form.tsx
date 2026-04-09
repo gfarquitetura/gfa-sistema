@@ -12,7 +12,7 @@ export function LoginForm() {
   return (
     <form action={action} className="flex flex-col gap-4">
       {state?.error && (
-        <p role="alert" className="text-sm text-red-400 text-center -mt-1 bg-red-950/30 border border-red-900/50 rounded-lg py-2.5 px-3">
+        <p role="alert" className="text-sm text-red-300 text-center bg-red-950/40 border border-red-900/60 rounded-lg py-2.5 px-3 -mt-1">
           {state.error}
         </p>
       )}
@@ -27,7 +27,7 @@ export function LoginForm() {
           type="email"
           required
           autoComplete="email"
-          className="bg-zinc-950/80 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-3 text-sm placeholder:text-zinc-700 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/30 transition-colors"
+          className="bg-zinc-950/80 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-3 text-sm placeholder:text-zinc-700 transition-colors"
         />
       </div>
 
@@ -41,14 +41,14 @@ export function LoginForm() {
           type="password"
           required
           autoComplete="current-password"
-          className="bg-zinc-950/80 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/30 transition-colors"
+          className="bg-zinc-950/80 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-3 text-sm transition-colors"
         />
       </div>
 
       <button
         type="submit"
         disabled={pending}
-        className="mt-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold uppercase tracking-widest py-3.5 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-blue-950/50"
+        className="btn-primary mt-2"
       >
         {pending ? 'Aguarde…' : 'Entrar'}
       </button>

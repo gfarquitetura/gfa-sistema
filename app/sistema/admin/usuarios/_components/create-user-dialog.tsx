@@ -26,7 +26,7 @@ export function CreateUserDialog() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="px-4 py-2 bg-zinc-100 text-zinc-950 text-xs font-semibold uppercase tracking-widest rounded hover:bg-white transition-colors"
+        className="btn-primary"
       >
         Convidar usuário
       </button>
@@ -125,7 +125,7 @@ export function CreateUserDialog() {
                 <button
                   type="submit"
                   disabled={pending}
-                  className="px-5 py-2 bg-zinc-100 text-zinc-950 text-xs font-semibold uppercase tracking-widest rounded hover:bg-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="btn-primary disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {pending ? 'Enviando...' : 'Convidar'}
                 </button>

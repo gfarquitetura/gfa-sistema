@@ -66,10 +66,7 @@ export default async function ClientesPage({ searchParams }: PageProps) {
         <div className="flex items-center gap-3">
           <ExportButton />
           {canManage && (
-            <Link
-              href="/sistema/clientes/novo"
-              className="px-4 py-2 bg-zinc-100 text-zinc-950 text-xs font-semibold uppercase tracking-widest rounded hover:bg-white transition-colors"
-            >
+            <Link href="/sistema/clientes/novo" className="btn-primary">
               Novo cliente
             </Link>
           )}

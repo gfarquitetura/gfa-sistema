@@ -17,7 +17,7 @@ export function AddExpenseDialog({ categories, projects, defaultProjectId }: Add
     <>
       <button
         onClick={() => setOpen(true)}
-        className="px-4 py-2 bg-zinc-100 text-zinc-950 text-xs font-semibold uppercase tracking-widest rounded hover:bg-white transition-colors"
+        className="btn-primary"
       >
         Nova despesa
       </button>

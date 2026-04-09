@@ -194,7 +194,7 @@ export function ProjectForm({ initialData, clients }: ProjectFormProps) {
       <div className="flex items-center gap-4 pt-2">
         <button
           type="submit" disabled={pending}
-          className="px-6 py-2.5 bg-zinc-100 text-zinc-950 text-xs font-semibold uppercase tracking-widest rounded hover:bg-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          className="btn-primary disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {pending ? 'Salvando...' : isEdit ? 'Salvar alterações' : 'Criar projeto'}
         </button>

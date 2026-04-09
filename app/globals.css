@@ -3,6 +3,9 @@
 :root {
   --background: #09090b;
   --foreground: #fafafa;
+  --brand:       #8B1A1A;
+  --brand-hover: #9E2020;
+  --brand-dim:   #3D0A0A;
 }
 
 @theme inline {
@@ -17,24 +20,51 @@ body {
   color: var(--foreground);
 }
 
-/* Thin custom scrollbar */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #3f3f46;
-  border-radius: 9999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #52525b;
+/* ── Thin custom scrollbar ────────────────────────────────── */
+::-webkit-scrollbar        { width: 5px; height: 5px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: #3f3f46; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #52525b; }
+
+/* ── Text selection ───────────────────────────────────────── */
+::selection { background: #3D0A0A; color: #fca5a5; }
+
+/* ── Global input focus (brand red ring) ──────────────────── */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #8B1A1A !important;
+  box-shadow: 0 0 0 3px rgba(139, 26, 26, 0.15);
 }
 
-/* Text selection */
-::selection {
-  background: #1e3a5f;
-  color: #e0f2fe;
+/* ── Table row hover ──────────────────────────────────────── */
+tbody tr:hover td {
+  background-color: rgba(255, 255, 255, 0.02);
 }
+
+/* ── Primary button (brand red) ───────────────────────────── */
+.btn-primary {
+  background-color: var(--brand);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  transition: background-color 150ms;
+  box-shadow: 0 4px 14px rgba(139, 26, 26, 0.25);
+}
+.btn-primary:hover  { background-color: var(--brand-hover); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── Section card ─────────────────────────────────────────── */
+.card {
+  border: 1px solid #27272a;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  background: #0c0c0e;
+  transition: border-color 200ms;
+}
+.card:hover { border-color: #3f3f46; }

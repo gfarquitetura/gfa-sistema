@@ -76,7 +76,7 @@ export default async function ClienteDetailPage({ params }: PageProps) {
             <ClientStatusButton clientId={client.id} isActive={client.is_active} />
             <Link
               href={`/sistema/clientes/${client.id}/editar`}
-              className="px-4 py-2 bg-zinc-100 text-zinc-950 text-xs font-semibold uppercase tracking-widest rounded hover:bg-white transition-colors"
+              className="btn-primary"
             >
               Editar
             </Link>
