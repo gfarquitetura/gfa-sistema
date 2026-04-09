@@ -179,7 +179,7 @@ insert into public.projects (
 ) values
   -- 1. Ativo — residência alto padrão
   (
-    'pp000001-0000-0000-0000-000000000001',
+    'b0000001-0000-0000-0000-000000000001',
     'GFA-2026-001',
     'Residência Família Monteiro — Pinheiros',
     'Projeto arquitetônico completo de residência unifamiliar de 420m² em Pinheiros. Inclui projeto executivo, compatibilização e acompanhamento de obra.',
@@ -191,7 +191,7 @@ insert into public.projects (
   ),
   -- 2. Ativo — escritório corporativo
   (
-    'pp000002-0000-0000-0000-000000000002',
+    'b0000002-0000-0000-0000-000000000002',
     'GFA-2026-002',
     'Tech Park — Fit-out Piso 12',
     'Projeto de interiores e fit-out de andar corporativo de 1.200m². Layout open office, salas de reunião, área de descompressão.',
@@ -203,7 +203,7 @@ insert into public.projects (
   ),
   -- 3. Ativo — clínica
   (
-    'pp000003-0000-0000-0000-000000000003',
+    'b0000003-0000-0000-0000-000000000003',
     'GFA-2026-003',
     'Clínica São Lucas — Reforma e Ampliação',
     'Reforma completa e ampliação de 180m² de clínica médica. Projeto segue normas RDC-50 ANVISA.',
@@ -215,7 +215,7 @@ insert into public.projects (
   ),
   -- 4. Ativo — shopping BH
   (
-    'pp000004-0000-0000-0000-000000000004',
+    'b0000004-0000-0000-0000-000000000004',
     'GFA-2026-004',
     'Shopping Bela Vista — Expansão Praça L3',
     'Projeto de expansão da praça de alimentação nível L3: 850m² de área nova, 12 operações, nova fachada.',
@@ -227,7 +227,7 @@ insert into public.projects (
   ),
   -- 5. Ativo — apartamento reforma
   (
-    'pp000005-0000-0000-0000-000000000005',
+    'b0000005-0000-0000-0000-000000000005',
     'GFA-2026-005',
     'Reforma Apartamento — Fabiana Marques',
     'Reforma completa de apartamento 4 dormitórios, 210m², no Centro de Curitiba. Inclui projeto de interiores.',
@@ -239,7 +239,7 @@ insert into public.projects (
   ),
   -- 6. Proposta — grupo RJ
   (
-    'pp000006-0000-0000-0000-000000000006',
+    'b0000006-0000-0000-0000-000000000006',
     'GFA-2026-006',
     'Costa Empreendimentos — Torre Residencial Ipanema',
     'Projeto arquitetônico de torre residencial de alto padrão: 28 pavimentos, 4 unidades por andar.',
@@ -251,7 +251,7 @@ insert into public.projects (
   ),
   -- 7. Proposta — sede construtora
   (
-    'pp000007-0000-0000-0000-000000000007',
+    'b0000007-0000-0000-0000-000000000007',
     'GFA-2026-007',
     'Construtora Horizonte — Nova Sede Administrativa',
     'Projeto executivo de novo edifício sede: 6 pavimentos, 3.200m² de área construída.',
@@ -263,7 +263,7 @@ insert into public.projects (
   ),
   -- 8. Concluído — Horizonte lote 1
   (
-    'pp000008-0000-0000-0000-000000000008',
+    'b0000008-0000-0000-0000-000000000008',
     'GFA-2025-008',
     'Residencial Vila Nova — Bloco A',
     'Projeto de arquitetura e compatibilização de edifício residencial Bloco A: 15 pavimentos, 120 unidades.',
@@ -275,7 +275,7 @@ insert into public.projects (
   ),
   -- 9. Concluído — instituto cultural
   (
-    'pp000009-0000-0000-0000-000000000009',
+    'b0000009-0000-0000-0000-000000000009',
     'GFA-2025-009',
     'Instituto Cultural Paulista — Retrofit Sede',
     'Projeto de retrofit e restauro da sede histórica do ICP, área de 680m². Tombado pelo CONDEPHAAT.',
@@ -287,7 +287,7 @@ insert into public.projects (
   ),
   -- 10. Pausado — casa de praia
   (
-    'pp000010-0000-0000-0000-000000000010',
+    'b0000010-0000-0000-0000-000000000010',
     'GFA-2026-010',
     'Residência Silva — Jurerê Internacional',
     'Projeto de residência de temporada com 380m², 5 suítes, piscina e área gourmet, em Jurerê Internacional.',
@@ -299,7 +299,7 @@ insert into public.projects (
   ),
   -- 11. Cancelado
   (
-    'pp000011-0000-0000-0000-000000000011',
+    'b0000011-0000-0000-0000-000000000011',
     'GFA-2025-011',
     'Grupo Costa — Escritório Botafogo',
     'Projeto de retrofit de laje corporativa 600m² em Botafogo, Rio de Janeiro.',
@@ -311,7 +311,7 @@ insert into public.projects (
   ),
   -- 12. Ativo — Residencial Vila Nova Bloco B
   (
-    'pp000012-0000-0000-0000-000000000012',
+    'b0000012-0000-0000-0000-000000000012',
     'GFA-2026-012',
     'Residencial Vila Nova — Bloco B',
     'Projeto de arquitetura Bloco B do empreendimento Vila Nova: 15 pavimentos, 120 unidades. Reaproveitamento parcial do projeto Bloco A.',
@@ -330,23 +330,23 @@ on conflict (id) do nothing;
 insert into public.project_members (project_id, profile_id, member_role, joined_at)
 values
   -- pp1 — Residência Monteiro
-  ('pp000001-0000-0000-0000-000000000001', 'aa000002-0000-0000-0000-000000000002', 'responsible',    now() - interval '88 days'),
-  ('pp000001-0000-0000-0000-000000000001', 'aa000004-0000-0000-0000-000000000004', 'collaborator',   now() - interval '88 days'),
+  ('b0000001-0000-0000-0000-000000000001', 'aa000002-0000-0000-0000-000000000002', 'responsible',    now() - interval '88 days'),
+  ('b0000001-0000-0000-0000-000000000001', 'aa000004-0000-0000-0000-000000000004', 'collaborator',   now() - interval '88 days'),
   -- pp2 — Tech Park
-  ('pp000002-0000-0000-0000-000000000002', 'aa000001-0000-0000-0000-000000000001', 'responsible',    now() - interval '78 days'),
-  ('pp000002-0000-0000-0000-000000000002', 'aa000002-0000-0000-0000-000000000002', 'collaborator',   now() - interval '78 days'),
-  ('pp000002-0000-0000-0000-000000000002', 'aa000004-0000-0000-0000-000000000004', 'collaborator',   now() - interval '78 days'),
+  ('b0000002-0000-0000-0000-000000000002', 'aa000001-0000-0000-0000-000000000001', 'responsible',    now() - interval '78 days'),
+  ('b0000002-0000-0000-0000-000000000002', 'aa000002-0000-0000-0000-000000000002', 'collaborator',   now() - interval '78 days'),
+  ('b0000002-0000-0000-0000-000000000002', 'aa000004-0000-0000-0000-000000000004', 'collaborator',   now() - interval '78 days'),
   -- pp3 — Clínica
-  ('pp000003-0000-0000-0000-000000000003', 'aa000002-0000-0000-0000-000000000002', 'responsible',    now() - interval '73 days'),
-  ('pp000003-0000-0000-0000-000000000003', 'aa000004-0000-0000-0000-000000000004', 'collaborator',   now() - interval '73 days'),
+  ('b0000003-0000-0000-0000-000000000003', 'aa000002-0000-0000-0000-000000000002', 'responsible',    now() - interval '73 days'),
+  ('b0000003-0000-0000-0000-000000000003', 'aa000004-0000-0000-0000-000000000004', 'collaborator',   now() - interval '73 days'),
   -- pp4 — Shopping BH
-  ('pp000004-0000-0000-0000-000000000004', 'aa000001-0000-0000-0000-000000000001', 'responsible',    now() - interval '58 days'),
-  ('pp000004-0000-0000-0000-000000000004', 'aa000002-0000-0000-0000-000000000002', 'collaborator',   now() - interval '58 days'),
+  ('b0000004-0000-0000-0000-000000000004', 'aa000001-0000-0000-0000-000000000001', 'responsible',    now() - interval '58 days'),
+  ('b0000004-0000-0000-0000-000000000004', 'aa000002-0000-0000-0000-000000000002', 'collaborator',   now() - interval '58 days'),
   -- pp5 — Fab. Marques
-  ('pp000005-0000-0000-0000-000000000005', 'aa000004-0000-0000-0000-000000000004', 'responsible',    now() - interval '53 days'),
+  ('b0000005-0000-0000-0000-000000000005', 'aa000004-0000-0000-0000-000000000004', 'responsible',    now() - interval '53 days'),
   -- pp12 — Bloco B
-  ('pp000012-0000-0000-0000-000000000012', 'aa000001-0000-0000-0000-000000000001', 'responsible',    now() - interval '63 days'),
-  ('pp000012-0000-0000-0000-000000000012', 'aa000004-0000-0000-0000-000000000004', 'collaborator',   now() - interval '63 days')
+  ('b0000012-0000-0000-0000-000000000012', 'aa000001-0000-0000-0000-000000000001', 'responsible',    now() - interval '63 days'),
+  ('b0000012-0000-0000-0000-000000000012', 'aa000004-0000-0000-0000-000000000004', 'collaborator',   now() - interval '63 days')
 on conflict (project_id, profile_id) do nothing;
 
 -- ----------------------------------------------------------------
@@ -379,42 +379,42 @@ begin
   insert into public.expenses (project_id, category_id, description, amount, expense_date) values
 
     -- Projeto: Residência Monteiro (pp1)
-    ('pp000001-0000-0000-0000-000000000001', cat_mao_obra,  'Horas técnicas — levantamento arquitetônico',  320000, '2026-01-15'),
-    ('pp000001-0000-0000-0000-000000000001', cat_impressao, 'Plotagem pranchas A1 — anteprojeto (12 fls)',   84000, '2026-02-03'),
-    ('pp000001-0000-0000-0000-000000000001', cat_desloc,    'Visita técnica ao terreno — combustível e pedágio', 18000, '2026-02-10'),
-    ('pp000001-0000-0000-0000-000000000001', cat_taxas,     'Taxa aprovação prefeitura — REURB',             95000, '2026-02-28'),
-    ('pp000001-0000-0000-0000-000000000001', cat_subcontr,  'Laudo estrutural — Eng. Ricardo Lima',         450000, '2026-03-05'),
-    ('pp000001-0000-0000-0000-000000000001', cat_impressao, 'Plotagem projeto executivo — 28 pranchas',     196000, '2026-03-20'),
+    ('b0000001-0000-0000-0000-000000000001', cat_mao_obra,  'Horas técnicas — levantamento arquitetônico',  320000, '2026-01-15'),
+    ('b0000001-0000-0000-0000-000000000001', cat_impressao, 'Plotagem pranchas A1 — anteprojeto (12 fls)',   84000, '2026-02-03'),
+    ('b0000001-0000-0000-0000-000000000001', cat_desloc,    'Visita técnica ao terreno — combustível e pedágio', 18000, '2026-02-10'),
+    ('b0000001-0000-0000-0000-000000000001', cat_taxas,     'Taxa aprovação prefeitura — REURB',             95000, '2026-02-28'),
+    ('b0000001-0000-0000-0000-000000000001', cat_subcontr,  'Laudo estrutural — Eng. Ricardo Lima',         450000, '2026-03-05'),
+    ('b0000001-0000-0000-0000-000000000001', cat_impressao, 'Plotagem projeto executivo — 28 pranchas',     196000, '2026-03-20'),
 
     -- Projeto: Tech Park fit-out (pp2)
-    ('pp000002-0000-0000-0000-000000000002', cat_mao_obra,  'Horas técnicas — desenvolvimento BIM',         780000, '2026-02-05'),
-    ('pp000002-0000-0000-0000-000000000002', cat_software,  'Licença Revit — 2 assentos, 3 meses',          390000, '2026-02-01'),
-    ('pp000002-0000-0000-0000-000000000002', cat_subcontr,  'Projeto de iluminação — Studio Lux',          1200000, '2026-02-20'),
-    ('pp000002-0000-0000-0000-000000000002', cat_impressao, 'Impressão apresentação ao cliente — 3 álbuns', 125000, '2026-03-01'),
-    ('pp000002-0000-0000-0000-000000000002', cat_mao_obra,  'Horas técnicas — coordenação de projetos',     650000, '2026-03-10'),
-    ('pp000002-0000-0000-0000-000000000002', cat_desloc,    'Viagem São Paulo–São Paulo (cliente Brooklin)', 35000, '2026-03-15'),
+    ('b0000002-0000-0000-0000-000000000002', cat_mao_obra,  'Horas técnicas — desenvolvimento BIM',         780000, '2026-02-05'),
+    ('b0000002-0000-0000-0000-000000000002', cat_software,  'Licença Revit — 2 assentos, 3 meses',          390000, '2026-02-01'),
+    ('b0000002-0000-0000-0000-000000000002', cat_subcontr,  'Projeto de iluminação — Studio Lux',          1200000, '2026-02-20'),
+    ('b0000002-0000-0000-0000-000000000002', cat_impressao, 'Impressão apresentação ao cliente — 3 álbuns', 125000, '2026-03-01'),
+    ('b0000002-0000-0000-0000-000000000002', cat_mao_obra,  'Horas técnicas — coordenação de projetos',     650000, '2026-03-10'),
+    ('b0000002-0000-0000-0000-000000000002', cat_desloc,    'Viagem São Paulo–São Paulo (cliente Brooklin)', 35000, '2026-03-15'),
 
     -- Projeto: Clínica São Lucas (pp3)
-    ('pp000003-0000-0000-0000-000000000003', cat_mao_obra,  'Horas técnicas — estudo preliminar',           420000, '2026-02-20'),
-    ('pp000003-0000-0000-0000-000000000003', cat_subcontr,  'Consultoria normas ANVISA — RDC-50',           800000, '2026-03-01'),
-    ('pp000003-0000-0000-0000-000000000003', cat_taxas,     'Registro CREA — ART projeto',                   22000, '2026-03-08'),
-    ('pp000003-0000-0000-0000-000000000003', cat_impressao, 'Plotagem pranchas — entrega ANVISA',            67000, '2026-03-25'),
+    ('b0000003-0000-0000-0000-000000000003', cat_mao_obra,  'Horas técnicas — estudo preliminar',           420000, '2026-02-20'),
+    ('b0000003-0000-0000-0000-000000000003', cat_subcontr,  'Consultoria normas ANVISA — RDC-50',           800000, '2026-03-01'),
+    ('b0000003-0000-0000-0000-000000000003', cat_taxas,     'Registro CREA — ART projeto',                   22000, '2026-03-08'),
+    ('b0000003-0000-0000-0000-000000000003', cat_impressao, 'Plotagem pranchas — entrega ANVISA',            67000, '2026-03-25'),
 
     -- Projeto: Shopping Bela Vista (pp4)
-    ('pp000004-0000-0000-0000-000000000004', cat_mao_obra,  'Horas técnicas — levantamento in loco BH',     560000, '2026-03-05'),
-    ('pp000004-0000-0000-0000-000000000004', cat_desloc,    'Passagem aérea SP–BH (2 técnicos)',            148000, '2026-03-05'),
-    ('pp000004-0000-0000-0000-000000000004', cat_desloc,    'Hospedagem Belo Horizonte — 3 diárias',         95000, '2026-03-06'),
-    ('pp000004-0000-0000-0000-000000000004', cat_subcontr,  'Projeto de estrutura metálica — Metalplan',   2400000, '2026-03-20'),
-    ('pp000004-0000-0000-0000-000000000004', cat_mao_obra,  'Horas técnicas — anteprojeto executivo',       890000, '2026-03-28'),
+    ('b0000004-0000-0000-0000-000000000004', cat_mao_obra,  'Horas técnicas — levantamento in loco BH',     560000, '2026-03-05'),
+    ('b0000004-0000-0000-0000-000000000004', cat_desloc,    'Passagem aérea SP–BH (2 técnicos)',            148000, '2026-03-05'),
+    ('b0000004-0000-0000-0000-000000000004', cat_desloc,    'Hospedagem Belo Horizonte — 3 diárias',         95000, '2026-03-06'),
+    ('b0000004-0000-0000-0000-000000000004', cat_subcontr,  'Projeto de estrutura metálica — Metalplan',   2400000, '2026-03-20'),
+    ('b0000004-0000-0000-0000-000000000004', cat_mao_obra,  'Horas técnicas — anteprojeto executivo',       890000, '2026-03-28'),
 
     -- Projeto: Reforma Fab. Marques (pp5)
-    ('pp000005-0000-0000-0000-000000000005', cat_mao_obra,  'Horas técnicas — visita e programa de necessidades', 180000, '2026-03-12'),
-    ('pp000005-0000-0000-0000-000000000005', cat_materiais, 'Amostras de revestimento e catálogos',          28000, '2026-03-20'),
+    ('b0000005-0000-0000-0000-000000000005', cat_mao_obra,  'Horas técnicas — visita e programa de necessidades', 180000, '2026-03-12'),
+    ('b0000005-0000-0000-0000-000000000005', cat_materiais, 'Amostras de revestimento e catálogos',          28000, '2026-03-20'),
 
     -- Projeto concluído: Bloco A (pp8)
-    ('pp000008-0000-0000-0000-000000000008', cat_mao_obra,  'Horas técnicas — projeto executivo completo', 2200000, '2025-06-30'),
-    ('pp000008-0000-0000-0000-000000000008', cat_subcontr,  'Compatibilização MEP — Setep Engenharia',      980000, '2025-08-15'),
-    ('pp000008-0000-0000-0000-000000000008', cat_impressao, 'Plotagem e encadernação — entrega final',      340000, '2025-12-15'),
+    ('b0000008-0000-0000-0000-000000000008', cat_mao_obra,  'Horas técnicas — projeto executivo completo', 2200000, '2025-06-30'),
+    ('b0000008-0000-0000-0000-000000000008', cat_subcontr,  'Compatibilização MEP — Setep Engenharia',      980000, '2025-08-15'),
+    ('b0000008-0000-0000-0000-000000000008', cat_impressao, 'Plotagem e encadernação — entrega final',      340000, '2025-12-15'),
 
     -- Overhead (sem projeto)
     (null, cat_software,  'Assinatura Adobe CC — anual (2 usuários)',         199000, '2026-01-05'),
@@ -437,35 +437,35 @@ insert into public.timesheet_entries (
 ) values
 
   -- Gabriel (admin) — Tech Park (pp2) — aprovados
-  ('aa000001-0000-0000-0000-000000000001', 'pp000002-0000-0000-0000-000000000002', '2026-03-03', 480, 'Revisão e coordenação BIM — compatibilização instalações', 'approved', now() - interval '28 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '27 days'),
-  ('aa000001-0000-0000-0000-000000000001', 'pp000002-0000-0000-0000-000000000002', '2026-03-04', 360, 'Reunião com cliente e equipe de engenharia', 'approved', now() - interval '28 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '27 days'),
-  ('aa000001-0000-0000-0000-000000000001', 'pp000004-0000-0000-0000-000000000004', '2026-03-05', 480, 'Visita técnica ao Shopping BH — levantamento in loco', 'approved', now() - interval '26 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '25 days'),
-  ('aa000001-0000-0000-0000-000000000001', 'pp000004-0000-0000-0000-000000000004', '2026-03-06', 240, 'Processamento de dados levantamento BH', 'approved', now() - interval '26 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '25 days'),
-  ('aa000001-0000-0000-0000-000000000001', 'pp000002-0000-0000-0000-000000000002', '2026-03-10', 420, 'Desenvolvimento anteprojeto — plantas baixas L12', 'approved', now() - interval '21 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '20 days'),
-  ('aa000001-0000-0000-0000-000000000001', 'pp000012-0000-0000-0000-000000000012', '2026-03-11', 240, 'Reunião de kick-off Bloco B com incorporadora', 'approved', now() - interval '21 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '20 days'),
+  ('aa000001-0000-0000-0000-000000000001', 'b0000002-0000-0000-0000-000000000002', '2026-03-03', 480, 'Revisão e coordenação BIM — compatibilização instalações', 'approved', now() - interval '28 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '27 days'),
+  ('aa000001-0000-0000-0000-000000000001', 'b0000002-0000-0000-0000-000000000002', '2026-03-04', 360, 'Reunião com cliente e equipe de engenharia', 'approved', now() - interval '28 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '27 days'),
+  ('aa000001-0000-0000-0000-000000000001', 'b0000004-0000-0000-0000-000000000004', '2026-03-05', 480, 'Visita técnica ao Shopping BH — levantamento in loco', 'approved', now() - interval '26 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '25 days'),
+  ('aa000001-0000-0000-0000-000000000001', 'b0000004-0000-0000-0000-000000000004', '2026-03-06', 240, 'Processamento de dados levantamento BH', 'approved', now() - interval '26 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '25 days'),
+  ('aa000001-0000-0000-0000-000000000001', 'b0000002-0000-0000-0000-000000000002', '2026-03-10', 420, 'Desenvolvimento anteprojeto — plantas baixas L12', 'approved', now() - interval '21 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '20 days'),
+  ('aa000001-0000-0000-0000-000000000001', 'b0000012-0000-0000-0000-000000000012', '2026-03-11', 240, 'Reunião de kick-off Bloco B com incorporadora', 'approved', now() - interval '21 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '20 days'),
   ('aa000001-0000-0000-0000-000000000001', null,                                   '2026-03-12', 120, 'Gestão interna — reunião de equipe e planejamento semanal', 'approved', now() - interval '20 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '19 days'),
   -- Gabriel — semana atual (submetidos)
-  ('aa000001-0000-0000-0000-000000000001', 'pp000004-0000-0000-0000-000000000004', '2026-03-31', 480, 'Desenvolvimento projeto anteprojeto Shopping — pavimento L3', 'submitted', now() - interval '3 days', null, null),
-  ('aa000001-0000-0000-0000-000000000001', 'pp000002-0000-0000-0000-000000000002', '2026-04-01', 360, 'Revisão memorial descritivo Tech Park', 'submitted', now() - interval '2 days', null, null),
+  ('aa000001-0000-0000-0000-000000000001', 'b0000004-0000-0000-0000-000000000004', '2026-03-31', 480, 'Desenvolvimento projeto anteprojeto Shopping — pavimento L3', 'submitted', now() - interval '3 days', null, null),
+  ('aa000001-0000-0000-0000-000000000001', 'b0000002-0000-0000-0000-000000000002', '2026-04-01', 360, 'Revisão memorial descritivo Tech Park', 'submitted', now() - interval '2 days', null, null),
 
   -- Ana (manager) — aprovados
-  ('aa000002-0000-0000-0000-000000000002', 'pp000001-0000-0000-0000-000000000001', '2026-03-03', 480, 'Desenvolvimento projeto executivo — planta baixas e cortes', 'approved', now() - interval '28 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '27 days'),
-  ('aa000002-0000-0000-0000-000000000002', 'pp000001-0000-0000-0000-000000000001', '2026-03-04', 480, 'Detalhamento banheiros e closet — Residência Monteiro', 'approved', now() - interval '28 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '27 days'),
-  ('aa000002-0000-0000-0000-000000000002', 'pp000003-0000-0000-0000-000000000003', '2026-03-05', 360, 'Revisão projeto Clínica São Lucas — ajustes pós-ANVISA', 'approved', now() - interval '26 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '25 days'),
-  ('aa000002-0000-0000-0000-000000000002', 'pp000001-0000-0000-0000-000000000001', '2026-03-10', 480, 'Elaboração caderno de especificações técnicas', 'approved', now() - interval '21 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '20 days'),
-  ('aa000002-0000-0000-0000-000000000002', 'pp000003-0000-0000-0000-000000000003', '2026-03-11', 480, 'Projeto elétrico e hidráulico clínica — compatibilização', 'approved', now() - interval '21 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '20 days'),
-  ('aa000002-0000-0000-0000-000000000002', 'pp000004-0000-0000-0000-000000000004', '2026-03-12', 300, 'Estudo preliminar Shopping BH — layout praça alimentação', 'approved', now() - interval '20 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '19 days'),
+  ('aa000002-0000-0000-0000-000000000002', 'b0000001-0000-0000-0000-000000000001', '2026-03-03', 480, 'Desenvolvimento projeto executivo — planta baixas e cortes', 'approved', now() - interval '28 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '27 days'),
+  ('aa000002-0000-0000-0000-000000000002', 'b0000001-0000-0000-0000-000000000001', '2026-03-04', 480, 'Detalhamento banheiros e closet — Residência Monteiro', 'approved', now() - interval '28 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '27 days'),
+  ('aa000002-0000-0000-0000-000000000002', 'b0000003-0000-0000-0000-000000000003', '2026-03-05', 360, 'Revisão projeto Clínica São Lucas — ajustes pós-ANVISA', 'approved', now() - interval '26 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '25 days'),
+  ('aa000002-0000-0000-0000-000000000002', 'b0000001-0000-0000-0000-000000000001', '2026-03-10', 480, 'Elaboração caderno de especificações técnicas', 'approved', now() - interval '21 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '20 days'),
+  ('aa000002-0000-0000-0000-000000000002', 'b0000003-0000-0000-0000-000000000003', '2026-03-11', 480, 'Projeto elétrico e hidráulico clínica — compatibilização', 'approved', now() - interval '21 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '20 days'),
+  ('aa000002-0000-0000-0000-000000000002', 'b0000004-0000-0000-0000-000000000004', '2026-03-12', 300, 'Estudo preliminar Shopping BH — layout praça alimentação', 'approved', now() - interval '20 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '19 days'),
   -- Ana — submetido aguardando aprovação
-  ('aa000002-0000-0000-0000-000000000002', 'pp000001-0000-0000-0000-000000000001', '2026-04-01', 480, 'Finalização pranchas projeto legal — entrega prefeitura', 'submitted', now() - interval '2 days', null, null),
-  ('aa000002-0000-0000-0000-000000000002', 'pp000003-0000-0000-0000-000000000003', '2026-04-02', 360, 'Revisão pós-vistoria ANVISA — adequações solicitadas', 'submitted', now() - interval '1 day',  null, null),
-  ('aa000002-0000-0000-0000-000000000002', 'pp000004-0000-0000-0000-000000000004', '2026-04-03', 420, 'Desenvolvimento anteprojeto Shopping BH — fachada', 'submitted', now() - interval '12 hours', null, null),
+  ('aa000002-0000-0000-0000-000000000002', 'b0000001-0000-0000-0000-000000000001', '2026-04-01', 480, 'Finalização pranchas projeto legal — entrega prefeitura', 'submitted', now() - interval '2 days', null, null),
+  ('aa000002-0000-0000-0000-000000000002', 'b0000003-0000-0000-0000-000000000003', '2026-04-02', 360, 'Revisão pós-vistoria ANVISA — adequações solicitadas', 'submitted', now() - interval '1 day',  null, null),
+  ('aa000002-0000-0000-0000-000000000002', 'b0000004-0000-0000-0000-000000000004', '2026-04-03', 420, 'Desenvolvimento anteprojeto Shopping BH — fachada', 'submitted', now() - interval '12 hours', null, null),
 
   -- Julia (readonly/colaboradora) — aprovados
-  ('aa000004-0000-0000-0000-000000000004', 'pp000001-0000-0000-0000-000000000001', '2026-03-03', 300, 'Modelagem 3D volumétrica — Residência Monteiro', 'approved', now() - interval '28 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '27 days'),
-  ('aa000004-0000-0000-0000-000000000004', 'pp000002-0000-0000-0000-000000000002', '2026-03-04', 480, 'Modelagem Revit — Tech Park piso 12', 'approved', now() - interval '28 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '27 days'),
-  ('aa000004-0000-0000-0000-000000000004', 'pp000005-0000-0000-0000-000000000005', '2026-03-10', 240, 'Elaboração moodboard e conceito — Reforma Fab. Marques', 'approved', now() - interval '21 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '20 days'),
-  ('aa000004-0000-0000-0000-000000000004', 'pp000012-0000-0000-0000-000000000012', '2026-03-11', 360, 'Implantação e cortes esquemáticos — Bloco B', 'approved', now() - interval '21 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '20 days'),
-  ('aa000004-0000-0000-0000-000000000004', 'pp000002-0000-0000-0000-000000000002', '2026-03-12', 480, 'Detalhamento BIM — salas de reunião Tech Park', 'approved', now() - interval '20 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '19 days'),
+  ('aa000004-0000-0000-0000-000000000004', 'b0000001-0000-0000-0000-000000000001', '2026-03-03', 300, 'Modelagem 3D volumétrica — Residência Monteiro', 'approved', now() - interval '28 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '27 days'),
+  ('aa000004-0000-0000-0000-000000000004', 'b0000002-0000-0000-0000-000000000002', '2026-03-04', 480, 'Modelagem Revit — Tech Park piso 12', 'approved', now() - interval '28 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '27 days'),
+  ('aa000004-0000-0000-0000-000000000004', 'b0000005-0000-0000-0000-000000000005', '2026-03-10', 240, 'Elaboração moodboard e conceito — Reforma Fab. Marques', 'approved', now() - interval '21 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '20 days'),
+  ('aa000004-0000-0000-0000-000000000004', 'b0000012-0000-0000-0000-000000000012', '2026-03-11', 360, 'Implantação e cortes esquemáticos — Bloco B', 'approved', now() - interval '21 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '20 days'),
+  ('aa000004-0000-0000-0000-000000000004', 'b0000002-0000-0000-0000-000000000002', '2026-03-12', 480, 'Detalhamento BIM — salas de reunião Tech Park', 'approved', now() - interval '20 days', 'aa000001-0000-0000-0000-000000000001', now() - interval '19 days'),
   -- Julia — rascunho (não submetido ainda)
-  ('aa000004-0000-0000-0000-000000000004', 'pp000002-0000-0000-0000-000000000002', '2026-04-07', 480, 'Modelagem BIM — área de descompressão e café', 'draft', null, null, null),
-  ('aa000004-0000-0000-0000-000000000004', 'pp000005-0000-0000-0000-000000000005', '2026-04-08', 300, 'Detalhamento marcenaria — Reforma Curitiba', 'draft', null, null, null);
+  ('aa000004-0000-0000-0000-000000000004', 'b0000002-0000-0000-0000-000000000002', '2026-04-07', 480, 'Modelagem BIM — área de descompressão e café', 'draft', null, null, null),
+  ('aa000004-0000-0000-0000-000000000004', 'b0000005-0000-0000-0000-000000000005', '2026-04-08', 300, 'Detalhamento marcenaria — Reforma Curitiba', 'draft', null, null, null);
