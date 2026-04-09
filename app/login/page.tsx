@@ -20,25 +20,28 @@ export default function LoginPage() {
       <div className="relative w-full max-w-sm">
 
         {/* Brand mark */}
-        <div className="flex flex-col items-center mb-10 gap-2">
-          <div className="flex items-center gap-0">
-            {/* Red block with G — mirrors the logo */}
+        <div className="flex flex-col items-center mb-10">
+          <div className="flex items-center" style={{ gap: 3 }}>
+            {/* Red block — G large and fills it */}
             <div
-              className="flex items-center justify-center rounded-sm"
-              style={{ width: 52, height: 52, background: '#8B1A1A' }}
+              className="flex items-center justify-center overflow-hidden shrink-0"
+              style={{ width: 54, height: 54, background: '#8B1A1A', borderRadius: 3 }}
             >
-              <span className="text-white font-bold text-3xl leading-none tracking-tight select-none">
-                G
-              </span>
+              <span
+                className="text-white leading-none select-none"
+                style={{ fontWeight: 900, fontSize: 50, marginLeft: -4 }}
+              >G</span>
             </div>
+            {/* FA — same height, black weight */}
             <span
-              className="font-bold text-zinc-100 leading-none tracking-tight select-none"
-              style={{ fontSize: 52, lineHeight: 1 }}
-            >
-              FA
-            </span>
+              className="text-zinc-100 leading-none select-none"
+              style={{ fontWeight: 900, fontSize: 48, letterSpacing: '-0.03em', lineHeight: 1 }}
+            >FA</span>
           </div>
-          <p className="text-[0.6rem] uppercase tracking-[0.5em] text-zinc-600">
+          <p
+            className="uppercase text-zinc-500 mt-2 select-none"
+            style={{ fontSize: '0.58rem', letterSpacing: '0.55em' }}
+          >
             Projetos
           </p>
         </div>

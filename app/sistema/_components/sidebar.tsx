@@ -71,20 +71,29 @@ export function Sidebar({ role, userEmail, fullName }: SidebarProps) {
   return (
     <aside className="flex flex-col w-56 min-h-screen bg-zinc-950 border-r border-zinc-800/50 px-3 py-5">
 
-      {/* Logo — mirrors brand mark */}
+      {/* Logo */}
       <div className="mb-7 px-2 pt-1">
-        <div className="flex items-center gap-0.5">
+        <div className="flex items-center" style={{ gap: 2 }}>
+          {/* Red block — G fills it */}
           <div
-            className="flex items-center justify-center rounded-[3px] shrink-0"
-            style={{ width: 26, height: 26, background: '#8B1A1A' }}
+            className="flex items-center justify-center overflow-hidden shrink-0"
+            style={{ width: 28, height: 28, background: '#8B1A1A', borderRadius: 2 }}
           >
-            <span className="text-white font-bold text-sm leading-none select-none">G</span>
+            <span
+              className="text-white leading-none select-none"
+              style={{ fontWeight: 900, fontSize: 24, marginLeft: -2 }}
+            >G</span>
           </div>
-          <span className="font-bold text-zinc-100 text-lg leading-none ml-0.5 select-none">FA</span>
-          <span className="text-[0.5rem] uppercase tracking-[0.35em] text-zinc-600 ml-2 self-end mb-0.5 select-none">
-            Projetos
-          </span>
+          {/* FA — same height, black weight */}
+          <span
+            className="text-zinc-100 leading-none select-none"
+            style={{ fontWeight: 900, fontSize: 22, letterSpacing: '-0.02em' }}
+          >FA</span>
         </div>
+        <span
+          className="uppercase text-zinc-600 select-none block mt-0.5"
+          style={{ fontSize: '0.42rem', letterSpacing: '0.42em' }}
+        >Projetos</span>
       </div>
 
       {/* Nav */}
