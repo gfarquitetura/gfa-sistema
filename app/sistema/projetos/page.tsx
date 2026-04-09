@@ -35,7 +35,11 @@ export default async function ProjetosPage({ searchParams }: PageProps) {
     .order(sort, { ascending: asc })
     .range(from, from + PAGE_SIZE - 1)
 
-  if (status !== 'all') query = query.eq('status', status)
+  const VALID_STATUSES = ['proposal', 'active', 'paused', 'completed', 'cancelled'] as const
+  type ValidStatus = typeof VALID_STATUSES[number]
+  if (status !== 'all' && VALID_STATUSES.includes(status as ValidStatus)) {
+    query = query.eq('status', status as ValidStatus)
+  }
   if (q.length >= 2)    query = query.or(`name.ilike.%${q}%,code.ilike.%${q}%`)
 
   const { data: projects, count } = await query

@@ -11,6 +11,7 @@ import {
 import { StatusButton } from '../_components/status-button'
 import { TeamSection } from '../_components/team-section'
 import { AuditTrail } from '@/app/sistema/clientes/[id]/_components/audit-trail'
+import type { Project, ProjectStatus } from '@/lib/types/database'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -29,11 +30,7 @@ export default async function ProjetoDetailPage({ params }: PageProps) {
   const supabase = await createClient()
 
   const [projectResult, membersResult, staffResult, auditResult] = await Promise.all([
-    supabase
-      .from('projects')
-      .select('*, clients(id, name)')
-      .eq('id', id)
-      .single(),
+    supabase.from('projects').select('*').eq('id', id).single(),
     supabase
       .from('project_members')
       .select('*, profiles(full_name, email)')
@@ -54,8 +51,17 @@ export default async function ProjetoDetailPage({ params }: PageProps) {
   ])
 
   if (!projectResult.data) notFound()
-  const project   = projectResult.data
+  const project = projectResult.data as Project
+
+  // Fetch client separately to avoid join type inference issues
+  const { data: client } = await supabase
+    .from('clients')
+    .select('id, name')
+    .eq('id', project.client_id)
+    .single()
+
   const canManage = !!profile && hasPermission(profile.role, 'projects:manage')
+  const status = project.status as ProjectStatus
 
   return (
     <div className="p-8 max-w-5xl">
@@ -67,17 +73,17 @@ export default async function ProjetoDetailPage({ params }: PageProps) {
           </Link>
           <div className="flex items-center gap-3 mb-1">
             <span className="text-xs font-mono text-zinc-500">{project.code}</span>
-            <span className={`px-2 py-0.5 text-[0.6rem] uppercase tracking-wider rounded border ${STATUS_COLORS[project.status]}`}>
-              {STATUS_LABELS[project.status]}
+            <span className={`px-2 py-0.5 text-[0.6rem] uppercase tracking-wider rounded border ${STATUS_COLORS[status]}`}>
+              {STATUS_LABELS[status]}
             </span>
           </div>
           <h1 className="text-xl font-light text-zinc-100">{project.name}</h1>
-          {(project.clients as any)?.name && (
+          {client && (
             <Link
-              href={`/sistema/clientes/${(project.clients as any).id}`}
+              href={`/sistema/clientes/${client.id}`}
               className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors mt-0.5 block"
             >
-              {(project.clients as any).name}
+              {client.name}
             </Link>
           )}
         </div>
@@ -95,7 +101,7 @@ export default async function ProjetoDetailPage({ params }: PageProps) {
       {canManage && (
         <div className="mb-8">
           <p className="text-xs uppercase tracking-widest text-zinc-600 mb-2">Alterar status</p>
-          <StatusButton projectId={id} currentStatus={project.status} />
+          <StatusButton projectId={id} currentStatus={status} />
         </div>
       )}
 
