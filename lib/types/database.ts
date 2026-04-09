@@ -222,6 +222,51 @@ export type Database = {
         }
         Relationships: []
       }
+      timesheet_entries: {
+        Row: {
+          id:               string
+          profile_id:       string
+          project_id:       string | null
+          entry_date:       string
+          minutes:          number
+          description:      string
+          notes:            string | null
+          status:           'draft' | 'submitted' | 'approved' | 'rejected'
+          rejection_reason: string | null
+          submitted_at:     string | null
+          reviewed_by:      string | null
+          reviewed_at:      string | null
+          created_at:       string
+          updated_at:       string
+        }
+        Insert: {
+          id?:               string
+          profile_id:        string
+          project_id?:       string | null
+          entry_date:        string
+          minutes:           number
+          description:       string
+          notes?:            string | null
+          status?:           'draft' | 'submitted' | 'approved' | 'rejected'
+          rejection_reason?: string | null
+          submitted_at?:     string | null
+          reviewed_by?:      string | null
+          reviewed_at?:      string | null
+        }
+        Update: {
+          project_id?:       string | null
+          entry_date?:       string
+          minutes?:          number
+          description?:      string
+          notes?:            string | null
+          status?:           'draft' | 'submitted' | 'approved' | 'rejected'
+          rejection_reason?: string | null
+          submitted_at?:     string | null
+          reviewed_by?:      string | null
+          reviewed_at?:      string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           id: string
@@ -267,5 +312,7 @@ export type Client        = Database['public']['Tables']['clients']['Row']
 export type Project       = Database['public']['Tables']['projects']['Row']
 export type ProjectMember    = Database['public']['Tables']['project_members']['Row']
 export type ProjectStatus    = Project['status']
-export type Expense          = Database['public']['Tables']['expenses']['Row']
-export type ExpenseCategory  = Database['public']['Tables']['expense_categories']['Row']
+export type Expense              = Database['public']['Tables']['expenses']['Row']
+export type ExpenseCategory      = Database['public']['Tables']['expense_categories']['Row']
+export type TimesheetEntry       = Database['public']['Tables']['timesheet_entries']['Row']
+export type TimesheetEntryStatus = TimesheetEntry['status']
