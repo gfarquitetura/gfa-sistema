@@ -5,6 +5,7 @@ import { hasPermission } from '@/lib/auth/roles'
 import { formatBRL } from '@/lib/projects/format'
 import { ExpensesTable } from './_components/expenses-table'
 import { AddExpenseDialog } from './_components/add-expense-dialog'
+import { FinanceiroFilters } from './_components/financeiro-filters'
 
 export const metadata: Metadata = { title: 'Financeiro — GFA Projetos' }
 
@@ -88,48 +89,7 @@ export default async function FinanceiroPage({ searchParams }: PageProps) {
       </div>
 
       {/* Filters */}
-      <form className="flex gap-3 flex-wrap mb-5">
-        <select
-          name="project"
-          defaultValue={sp.project ?? ''}
-          onChange={(e) => {
-            const url = new URL(window.location.href)
-            if (e.target.value) url.searchParams.set('project', e.target.value)
-            else url.searchParams.delete('project')
-            url.searchParams.delete('page')
-            window.location.href = url.toString()
-          }}
-          className="bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-4 py-2 text-sm focus:outline-none focus:border-zinc-500 transition-colors"
-        >
-          <option value="">Todos os projetos</option>
-          <option value="__overhead__">Somente overhead</option>
-          {projects.map((p) => (
-            <option key={p.id} value={p.id}>{p.code} — {p.name}</option>
-          ))}
-        </select>
-
-        <select
-          name="category"
-          defaultValue={sp.category ?? ''}
-          onChange={(e) => {
-            const url = new URL(window.location.href)
-            if (e.target.value) url.searchParams.set('category', e.target.value)
-            else url.searchParams.delete('category')
-            url.searchParams.delete('page')
-            window.location.href = url.toString()
-          }}
-          className="bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-4 py-2 text-sm focus:outline-none focus:border-zinc-500 transition-colors"
-        >
-          <option value="">Todas as categorias</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
-          ))}
-        </select>
-
-        <p className="text-xs text-zinc-600 self-center ml-1">
-          {total} despesa{total !== 1 ? 's' : ''}
-        </p>
-      </form>
+      <FinanceiroFilters categories={categories} projects={projects} total={total} />
 
       {/* Table */}
       <ExpensesTable
