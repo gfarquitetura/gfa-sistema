@@ -13,7 +13,7 @@ export default async function SistemaLayout({
   if (!profile.is_active) redirect('/login?motivo=conta-inativa')
 
   return (
-    <div className="flex min-h-screen bg-zinc-900">
+    <div className="flex min-h-screen bg-zinc-950">
       <Sidebar
         role={profile.role}
         userEmail={profile.email}
