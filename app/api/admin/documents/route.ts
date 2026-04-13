@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
-// pdf-parse is CJS with no default ESM export
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const pdfParse: (buffer: Buffer) => Promise<{ text: string }> = require('pdf-parse')
+import { extractText } from 'unpdf'
 import { createClient } from '@/lib/supabase/server'
 import { getProfile } from '@/lib/auth/get-profile'
 import { chunkText } from '@/lib/ai/chunker'
@@ -76,9 +74,9 @@ export async function POST(request: NextRequest) {
   // ── 1. Extract text from PDF ───────────────────────────────────────
   let text: string
   try {
-    const buffer = Buffer.from(await file.arrayBuffer())
-    const parsed = await pdfParse(buffer)
-    text = parsed.text
+    const buffer = await file.arrayBuffer()
+    const { text: pages } = await extractText(new Uint8Array(buffer), { mergePages: true })
+    text = Array.isArray(pages) ? pages.join('\n') : (pages as string)
   } catch {
     return new NextResponse('Erro ao ler o PDF.', { status: 422 })
   }
