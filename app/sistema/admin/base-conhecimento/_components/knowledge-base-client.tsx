@@ -8,12 +8,18 @@ type DocSource = {
   indexed_at: string
 }
 
+type UploadStep =
+  | { status: 'idle' }
+  | { status: 'uploading'; progress: number }   // 0–100 %
+  | { status: 'processing' }
+  | { status: 'done'; source: string; chunks: number }
+  | { status: 'error'; message: string }
+
 export function KnowledgeBaseClient({ initialSources }: { initialSources: DocSource[] }) {
   const [sources, setSources]           = useState<DocSource[]>(initialSources)
-  const [uploading, setUploading]       = useState(false)
-  const [uploadMsg, setUploadMsg]       = useState<{ ok: boolean; text: string } | null>(null)
-  const [deletingSource, setDeletingSource] = useState<string | null>(null)
+  const [step, setStep]                 = useState<UploadStep>({ status: 'idle' })
   const [selectedFile, setSelectedFile] = useState<string | null>(null)
+  const [deletingSource, setDeletingSource] = useState<string | null>(null)
   const [, startTransition]             = useTransition()
   const fileRef                         = useRef<HTMLInputElement>(null)
 
@@ -22,34 +28,71 @@ export function KnowledgeBaseClient({ initialSources }: { initialSources: DocSou
     const file = fileRef.current?.files?.[0]
     if (!file) return
 
-    setUploading(true)
-    setUploadMsg(null)
-
-    const fd = new FormData()
-    fd.append('file', file)
+    setStep({ status: 'uploading', progress: 0 })
 
     try {
-      const res = await fetch('/api/admin/documents', { method: 'POST', body: fd })
-      if (res.ok) {
-        const data: { source: string; chunk_count: number } = await res.json()
-        setUploadMsg({ ok: true, text: `"${data.source}" indexado — ${data.chunk_count} trechos.` })
-        setSelectedFile(null)
-        if (fileRef.current) fileRef.current.value = ''
-        // refresh list
-        startTransition(() => {
-          setSources((prev) => {
-            const filtered = prev.filter((s) => s.source !== data.source)
-            return [{ source: data.source, chunk_count: data.chunk_count, indexed_at: new Date().toISOString() }, ...filtered]
-          })
-        })
-      } else {
-        const msg = await res.text()
-        setUploadMsg({ ok: false, text: msg || 'Erro ao processar o PDF.' })
+      // ── Step 1: get signed upload URL ─────────────────────────────
+      const urlRes = await fetch(
+        `/api/admin/documents/upload-url?filename=${encodeURIComponent(file.name)}`
+      )
+      if (!urlRes.ok) {
+        const msg = await urlRes.text()
+        setStep({ status: 'error', message: msg })
+        return
       }
-    } catch {
-      setUploadMsg({ ok: false, text: 'Erro de conexão. Tente novamente.' })
-    } finally {
-      setUploading(false)
+      const { signedUrl, storagePath, sourceName } = await urlRes.json()
+
+      // ── Step 2: upload directly to Supabase Storage (with progress) ──
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest()
+        xhr.open('PUT', signedUrl)
+        xhr.setRequestHeader('Content-Type', 'application/pdf')
+
+        xhr.upload.addEventListener('progress', (ev) => {
+          if (ev.lengthComputable) {
+            setStep({ status: 'uploading', progress: Math.round((ev.loaded / ev.total) * 100) })
+          }
+        })
+
+        xhr.addEventListener('load', () => {
+          if (xhr.status >= 200 && xhr.status < 300) resolve()
+          else reject(new Error(`Upload falhou (${xhr.status})`))
+        })
+        xhr.addEventListener('error', () => reject(new Error('Erro de rede durante o upload.')))
+        xhr.send(file)
+      })
+
+      // ── Step 3: trigger processing on the server ──────────────────
+      setStep({ status: 'processing' })
+
+      const processRes = await fetch('/api/admin/documents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ storagePath, sourceName }),
+      })
+
+      if (!processRes.ok) {
+        const msg = await processRes.text()
+        setStep({ status: 'error', message: msg })
+        return
+      }
+
+      const result: { source: string; chunk_count: number } = await processRes.json()
+      setStep({ status: 'done', source: result.source, chunks: result.chunk_count })
+      setSelectedFile(null)
+      if (fileRef.current) fileRef.current.value = ''
+
+      startTransition(() => {
+        setSources((prev) => {
+          const filtered = prev.filter((s) => s.source !== result.source)
+          return [
+            { source: result.source, chunk_count: result.chunk_count, indexed_at: new Date().toISOString() },
+            ...filtered,
+          ]
+        })
+      })
+    } catch (err) {
+      setStep({ status: 'error', message: err instanceof Error ? err.message : 'Erro inesperado.' })
     }
   }
 
@@ -66,6 +109,8 @@ export function KnowledgeBaseClient({ initialSources }: { initialSources: DocSou
     }
   }
 
+  const busy = step.status === 'uploading' || step.status === 'processing'
+
   return (
     <div className="space-y-8">
       {/* Upload form */}
@@ -73,6 +118,7 @@ export function KnowledgeBaseClient({ initialSources }: { initialSources: DocSou
         <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-widest mb-4">
           Adicionar documento
         </h2>
+
         <form onSubmit={handleUpload} className="flex flex-col sm:flex-row gap-3 items-start">
           <label className="flex-1 cursor-pointer">
             <input
@@ -80,9 +126,9 @@ export function KnowledgeBaseClient({ initialSources }: { initialSources: DocSou
               type="file"
               accept=".pdf,application/pdf"
               className="sr-only"
-              disabled={uploading}
+              disabled={busy}
               onChange={(e) => {
-                setUploadMsg(null)
+                setStep({ status: 'idle' })
                 setSelectedFile(e.target.files?.[0]?.name ?? null)
               }}
             />
@@ -90,27 +136,50 @@ export function KnowledgeBaseClient({ initialSources }: { initialSources: DocSou
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0" aria-hidden="true">
                 <path d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
               </svg>
-              <span>{selectedFile ?? 'Selecionar PDF…'}</span>
+              <span className="truncate">{selectedFile ?? 'Selecionar PDF…'}</span>
             </div>
           </label>
 
-          <button
-            type="submit"
-            disabled={uploading}
-            className="btn-primary whitespace-nowrap"
-          >
-            {uploading ? 'Processando…' : 'Indexar documento'}
+          <button type="submit" disabled={!selectedFile || busy} className="btn-primary whitespace-nowrap">
+            {busy ? 'Aguarde…' : 'Indexar documento'}
           </button>
         </form>
 
-        {uploadMsg && (
-          <p className={`mt-3 text-sm ${uploadMsg.ok ? 'text-emerald-400' : 'text-red-400'}`}>
-            {uploadMsg.text}
+        {/* Progress feedback */}
+        {step.status === 'uploading' && (
+          <div className="mt-4 space-y-1.5">
+            <div className="flex justify-between text-xs text-zinc-500">
+              <span>Enviando para armazenamento…</span>
+              <span>{step.progress}%</span>
+            </div>
+            <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all"
+                style={{ width: `${step.progress}%`, background: '#8B1A1A' }}
+              />
+            </div>
+          </div>
+        )}
+
+        {step.status === 'processing' && (
+          <div className="mt-4 flex items-center gap-2 text-sm text-zinc-400">
+            <span className="inline-block w-3 h-3 rounded-full animate-pulse" style={{ background: '#8B1A1A' }} />
+            Extraindo texto e gerando embeddings… isso pode levar alguns minutos para arquivos grandes.
+          </div>
+        )}
+
+        {step.status === 'done' && (
+          <p className="mt-3 text-sm text-emerald-400">
+            "{step.source}" indexado com sucesso — {step.chunks} trechos.
           </p>
         )}
 
+        {step.status === 'error' && (
+          <p className="mt-3 text-sm text-red-400">{step.message}</p>
+        )}
+
         <p className="mt-3 text-xs text-zinc-600">
-          Tamanho máximo: 20 MB. O texto existente para o mesmo arquivo será substituído.
+          Sem limite de tamanho. O arquivo é enviado direto ao armazenamento — PDFs grandes podem levar alguns minutos para processar.
         </p>
       </div>
 
@@ -129,7 +198,6 @@ export function KnowledgeBaseClient({ initialSources }: { initialSources: DocSou
                 key={doc.source}
                 className="flex items-center gap-4 px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-lg"
               >
-                {/* PDF icon */}
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-zinc-500 shrink-0" aria-hidden="true">
                   <path d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                 </svg>
