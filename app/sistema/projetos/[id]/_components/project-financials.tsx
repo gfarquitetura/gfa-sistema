@@ -9,7 +9,7 @@ type ExpenseRow = {
   description: string
   amount: number
   expense_date: string
-  expense_categories: { name: string } | null
+  category_id: string | null
 }
 
 interface ProjectFinancialsProps {
@@ -28,7 +28,7 @@ export async function ProjectFinancials({
   const [expensesResult, categoriesResult, projectsResult] = await Promise.all([
     supabase
       .from('expenses')
-      .select('id, description, amount, expense_date, expense_categories(name)')
+      .select('id, description, amount, expense_date, category_id')
       .eq('project_id', projectId)
       .order('expense_date', { ascending: false })
       .limit(8),
@@ -37,8 +37,10 @@ export async function ProjectFinancials({
   ])
 
   const expenses   = (expensesResult.data ?? []) as ExpenseRow[]
-  const categories = categoriesResult.data as ExpenseCategory[] ?? []
-  const projects   = projectsResult.data as Pick<Project, 'id' | 'code' | 'name'>[] ?? []
+  const categories = (categoriesResult.data ?? []) as ExpenseCategory[]
+  const projects   = (projectsResult.data ?? []) as Pick<Project, 'id' | 'code' | 'name'>[]
+
+  const categoryMap = new Map(categories.map((c) => [c.id, c.name]))
 
   const totalExpenses = expenses.reduce((s, e) => s + e.amount, 0)
 
@@ -109,7 +111,7 @@ export async function ProjectFinancials({
                 <div>
                   <p className="text-sm text-zinc-300">{e.description}</p>
                   <p className="text-xs text-zinc-600 mt-0.5">
-                    {(e.expense_categories as any)?.name ?? 'Sem categoria'} ·{' '}
+                    {(e.category_id ? categoryMap.get(e.category_id) : null) ?? 'Sem categoria'} ·{' '}
                     {new Date(e.expense_date).toLocaleDateString('pt-BR')}
                   </p>
                 </div>
