@@ -38,11 +38,15 @@ export async function POST(request: NextRequest) {
 
   // ── 2. Retrieve relevant chunks from pgvector ─────────────────────
   const supabase = await createClient()
-  const { data: rawChunks } = await supabase.rpc('match_documents', {
+  const { data: rawChunks, error: rpcError } = await supabase.rpc('match_documents', {
     query_embedding: queryEmbedding,
-    match_threshold: 0.70,
-    match_count: 4,
+    match_threshold: 0.50,
+    match_count: 5,
   })
+
+  if (rpcError) {
+    console.error('[chat] match_documents RPC error:', rpcError.message)
+  }
 
   const chunks: RetrievedChunk[] = (rawChunks ?? []).map(
     (c: { content: string; source: string; section: string | null; similarity: number }) => ({
