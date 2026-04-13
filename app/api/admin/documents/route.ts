@@ -121,7 +121,10 @@ export async function POST(request: NextRequest) {
 
   const { error: insertError } = await supabase.from('ai_documents').insert(rows)
   if (insertError) {
-    return new NextResponse('Erro ao salvar os trechos.', { status: 500 })
+    return new NextResponse(
+      `Erro ao salvar os trechos: ${insertError.message} (code: ${insertError.code})`,
+      { status: 500 }
+    )
   }
 
   return NextResponse.json({
