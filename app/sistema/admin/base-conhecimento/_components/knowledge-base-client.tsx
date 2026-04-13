@@ -9,12 +9,13 @@ type DocSource = {
 }
 
 export function KnowledgeBaseClient({ initialSources }: { initialSources: DocSource[] }) {
-  const [sources, setSources]       = useState<DocSource[]>(initialSources)
-  const [uploading, setUploading]   = useState(false)
-  const [uploadMsg, setUploadMsg]   = useState<{ ok: boolean; text: string } | null>(null)
+  const [sources, setSources]           = useState<DocSource[]>(initialSources)
+  const [uploading, setUploading]       = useState(false)
+  const [uploadMsg, setUploadMsg]       = useState<{ ok: boolean; text: string } | null>(null)
   const [deletingSource, setDeletingSource] = useState<string | null>(null)
-  const [, startTransition]         = useTransition()
-  const fileRef                     = useRef<HTMLInputElement>(null)
+  const [selectedFile, setSelectedFile] = useState<string | null>(null)
+  const [, startTransition]             = useTransition()
+  const fileRef                         = useRef<HTMLInputElement>(null)
 
   async function handleUpload(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -32,6 +33,8 @@ export function KnowledgeBaseClient({ initialSources }: { initialSources: DocSou
       if (res.ok) {
         const data: { source: string; chunk_count: number } = await res.json()
         setUploadMsg({ ok: true, text: `"${data.source}" indexado — ${data.chunk_count} trechos.` })
+        setSelectedFile(null)
+        if (fileRef.current) fileRef.current.value = ''
         // refresh list
         startTransition(() => {
           setSources((prev) => {
@@ -39,7 +42,6 @@ export function KnowledgeBaseClient({ initialSources }: { initialSources: DocSou
             return [{ source: data.source, chunk_count: data.chunk_count, indexed_at: new Date().toISOString() }, ...filtered]
           })
         })
-        if (fileRef.current) fileRef.current.value = ''
       } else {
         const msg = await res.text()
         setUploadMsg({ ok: false, text: msg || 'Erro ao processar o PDF.' })
@@ -79,15 +81,16 @@ export function KnowledgeBaseClient({ initialSources }: { initialSources: DocSou
               accept=".pdf,application/pdf"
               className="sr-only"
               disabled={uploading}
-              onChange={() => setUploadMsg(null)}
+              onChange={(e) => {
+                setUploadMsg(null)
+                setSelectedFile(e.target.files?.[0]?.name ?? null)
+              }}
             />
             <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg border border-zinc-700 bg-zinc-800 hover:bg-zinc-700 transition-colors text-sm text-zinc-400 cursor-pointer">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0" aria-hidden="true">
                 <path d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
               </svg>
-              <span id="file-label">
-                {fileRef.current?.files?.[0]?.name ?? 'Selecionar PDF…'}
-              </span>
+              <span>{selectedFile ?? 'Selecionar PDF…'}</span>
             </div>
           </label>
 
