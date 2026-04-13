@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getProfile } from '@/lib/auth/get-profile'
 import { Sidebar } from './_components/sidebar'
+import { ChatAssistant } from './_components/chat-assistant'
 
 export default async function SistemaLayout({
   children,
@@ -20,6 +21,7 @@ export default async function SistemaLayout({
         fullName={profile.full_name}
       />
       <main className="flex-1 overflow-auto">{children}</main>
+      <ChatAssistant />
     </div>
   )
 }

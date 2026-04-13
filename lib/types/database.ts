@@ -267,6 +267,27 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_documents: {
+        Row: {
+          id:          number
+          content:     string
+          embedding:   number[]
+          source:      string
+          section:     string | null
+          page_number: number | null
+          created_at:  string
+        }
+        Insert: {
+          content:     string
+          embedding:   number[]
+          source:      string
+          section?:    string | null
+          page_number?: number | null
+          created_at?: string
+        }
+        Update: Record<string, never>
+        Relationships: []
+      }
       profiles: {
         Row: {
           id: string
@@ -299,7 +320,21 @@ export type Database = {
       }
     }
     Views: Record<string, never>
-    Functions: Record<string, never>
+    Functions: {
+      match_documents: {
+        Args: {
+          query_embedding: number[]
+          match_threshold?: number
+          match_count?: number
+        }
+        Returns: {
+          content:    string
+          source:     string
+          section:    string | null
+          similarity: number
+        }[]
+      }
+    }
     Enums: Record<string, never>
     CompositeTypes: Record<string, never>
   }
@@ -316,3 +351,4 @@ export type Expense              = Database['public']['Tables']['expenses']['Row
 export type ExpenseCategory      = Database['public']['Tables']['expense_categories']['Row']
 export type TimesheetEntry       = Database['public']['Tables']['timesheet_entries']['Row']
 export type TimesheetEntryStatus = TimesheetEntry['status']
+export type AiDocument           = Database['public']['Tables']['ai_documents']['Row']
