@@ -15,12 +15,15 @@ export function buildSystemPrompt(
   const contextBlock = hasContext
     ? `## Trechos da base de conhecimento (use como referência primária)
 
-Cada trecho está identificado com fonte e seção. Ao responder, cite sempre no formato **[Fonte — Seção]** imediatamente após a informação usada.
+Cada trecho está marcado com a fonte de origem. Ao responder:
+- Cite sempre no formato **[Fonte › Artigo/Seção]** imediatamente após a informação usada
+- O número do artigo, parágrafo ou item deve ser extraído do TEXTO do trecho, não do cabeçalho — o cabeçalho é apenas um localizador aproximado
+- Exemplo correto: se o texto diz "Art. 28. O projeto..." cite **[DODF › Art. 28]**, mesmo que o cabeçalho do trecho diga "Art. 25"
 
 ${chunks
   .map(
     (c, i) =>
-      `### Trecho ${i + 1} — ${c.source}${c.section ? ` › ${c.section}` : ''}\n${c.content}`
+      `### Trecho ${i + 1} — Fonte: ${c.source}${c.section ? ` (aprox. ${c.section})` : ''}\n${c.content}`
   )
   .join('\n\n---\n\n')}
 `
