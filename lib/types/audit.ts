@@ -15,6 +15,7 @@ export type AuditAction =
   | 'user.role_changed'
   | 'user.deactivated'
   | 'user.reactivated'
+  | 'user.deleted'
 
   // Clients (Phase 2)
   | 'client.created'

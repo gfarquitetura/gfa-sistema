@@ -1,7 +1,7 @@
 'use client'
 
-import { useActionState } from 'react'
-import { changeUserRole, resendInvite, toggleUserStatus, type UserActionState } from '@/app/actions/users'
+import { useActionState, useState } from 'react'
+import { changeUserRole, resendInvite, toggleUserStatus, deleteUser, type UserActionState } from '@/app/actions/users'
 import { ROLE_LABELS } from '@/lib/auth/roles'
 import type { Profile, Role } from '@/lib/types/database'
 
@@ -41,6 +41,11 @@ function UserRow({ user, currentUserId }: { user: Profile; currentUserId: string
     resendInvite,
     undefined
   )
+  const [deleteState, deleteAction, deletePending] = useActionState<UserActionState, FormData>(
+    deleteUser,
+    undefined
+  )
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   const isSelf = user.id === currentUserId
 
@@ -131,6 +136,43 @@ function UserRow({ user, currentUserId }: { user: Profile; currentUserId: string
                 <p className="text-xs text-red-400 mt-1">{statusState.error}</p>
               )}
             </form>
+          )}
+
+          {/* Delete */}
+          {!isSelf && (
+            confirmingDelete ? (
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-xs text-zinc-400">Confirmar?</span>
+                <form action={deleteAction} onSubmit={() => setConfirmingDelete(false)}>
+                  <input type="hidden" name="user_id" value={user.id} />
+                  <button
+                    type="submit"
+                    disabled={deletePending}
+                    className="text-xs text-red-500 hover:text-red-400 transition-colors disabled:opacity-40 cursor-pointer font-medium"
+                  >
+                    Sim, remover
+                  </button>
+                </form>
+                <button
+                  type="button"
+                  onClick={() => setConfirmingDelete(false)}
+                  className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors cursor-pointer"
+                >
+                  Cancelar
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setConfirmingDelete(true)}
+                className="text-xs text-zinc-600 hover:text-red-500 transition-colors cursor-pointer"
+              >
+                Remover
+              </button>
+            )
+          )}
+          {deleteState && 'error' in deleteState && (
+            <p className="text-xs text-red-400">{deleteState.error}</p>
           )}
         </div>
       </td>

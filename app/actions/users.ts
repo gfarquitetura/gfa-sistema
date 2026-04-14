@@ -152,6 +152,50 @@ export async function resendInvite(
 }
 
 // ============================================================
+// Delete user (hard delete — removes from auth + profiles)
+// ============================================================
+export async function deleteUser(
+  _prev: UserActionState,
+  formData: FormData
+): Promise<UserActionState> {
+  const caller = await requireAdmin()
+
+  const userId = formData.get('user_id') as string
+  if (!userId) return { error: 'ID inválido.' }
+
+  // Prevent self-deletion
+  if (userId === caller.id) return { error: 'Você não pode remover sua própria conta.' }
+
+  const supabase = await createClient()
+  const admin = createAdminClient()
+
+  // Fetch target info for audit before deletion
+  const { data: target } = await supabase
+    .from('profiles')
+    .select('email, full_name')
+    .eq('id', userId)
+    .single()
+
+  // Delete from auth (cascades to profiles via DB trigger/FK)
+  const { error } = await admin.auth.admin.deleteUser(userId)
+  if (error) return { error: `Erro ao remover usuário: ${error.message}` }
+
+  await logAudit({
+    action: 'user.deleted',
+    entity: 'user',
+    entityId: userId,
+    metadata: {
+      target_email: target?.email,
+      target_name: target?.full_name,
+      deleted_by: caller.email,
+    },
+  })
+
+  revalidatePath('/sistema/admin/usuarios')
+  return { success: `${target?.full_name || target?.email} removido.` }
+}
+
+// ============================================================
 // Toggle active status
 // ============================================================
 export async function toggleUserStatus(
