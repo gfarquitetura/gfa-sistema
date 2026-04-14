@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useRef, useState, useTransition } from 'react'
+import { useActionState, useEffect, useRef, useState, useTransition } from 'react'
 import { resetAIData, type AIActionState } from '@/app/actions/ai'
 
 type DocSource = {
@@ -28,6 +28,14 @@ export function KnowledgeBaseClient({ initialSources }: { initialSources: DocSou
   const [resetState, resetAction, resetting] = useActionState<AIActionState, FormData>(resetAIData, undefined)
   const [resetConfirm, setResetConfirm]      = useState('')
   const [showResetForm, setShowResetForm]    = useState(false)
+
+  // Clear the sources list when reset succeeds
+  useEffect(() => {
+    if (resetState && 'success' in resetState) {
+      setSources([])
+      setShowResetForm(false)
+    }
+  }, [resetState])
 
   async function handleUpload(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
