@@ -137,6 +137,7 @@ export async function POST(
           source:     c.source,
           section:    c.section,
           similarity: c.similarity,
+          content:    c.content,
         }))
 
         // 3. Send sources event (client renders these below the message)

@@ -2,29 +2,111 @@
 
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { useState } from 'react'
 import type { ConversationMessage, MessageSource } from '@/lib/types/database'
 
 // ── Sources list ──────────────────────────────────────────────────────
 
+type GroupedSource = {
+  source:     string
+  similarity: number          // highest across all chunks
+  sections:   string[]        // distinct non-empty section labels
+  chunks:     MessageSource[] // all original chunks for this source
+}
+
+function groupSources(sources: MessageSource[]): GroupedSource[] {
+  const map = new Map<string, GroupedSource>()
+
+  for (const s of sources) {
+    const existing = map.get(s.source)
+    if (!existing) {
+      map.set(s.source, {
+        source:     s.source,
+        similarity: s.similarity,
+        sections:   s.section ? [s.section] : [],
+        chunks:     [s],
+      })
+    } else {
+      if (s.similarity > existing.similarity) existing.similarity = s.similarity
+      if (s.section && !existing.sections.includes(s.section)) {
+        existing.sections.push(s.section)
+      }
+      existing.chunks.push(s)
+    }
+  }
+
+  return Array.from(map.values()).sort((a, b) => b.similarity - a.similarity)
+}
+
+function SourceItem({ group }: { group: GroupedSource }) {
+  const [open, setOpen]             = useState(false)
+  const [activeIdx, setActiveIdx]   = useState<number | null>(null)
+
+  // Trim filename: remove path separators and long prefixes
+  const displayName = group.source.replace(/^.*[\\/]/, '')
+
+  return (
+    <div className="text-xs">
+      {/* Header row — always visible */}
+      <button
+        type="button"
+        onClick={() => { setOpen((v) => !v); setActiveIdx(null) }}
+        className="flex items-start gap-1.5 w-full text-left cursor-pointer group"
+      >
+        <span className="text-zinc-600 mt-0.5 shrink-0 transition-transform" style={{ display: 'inline-block', transform: open ? 'rotate(90deg)' : 'rotate(0deg)' }}>›</span>
+        <span className="flex-1 min-w-0">
+          <span className="text-zinc-400 group-hover:text-zinc-200 transition-colors break-all">{displayName}</span>
+          <span className="text-zinc-600 ml-1.5">{Math.round(group.similarity * 100)}% relevância</span>
+          {group.sections.length > 0 && (
+            <span className="block text-zinc-600 mt-0.5 leading-relaxed">
+              {group.sections.join(' · ')}
+            </span>
+          )}
+        </span>
+      </button>
+
+      {/* Expanded chunk list */}
+      {open && (
+        <div className="mt-2 ml-3 space-y-1.5">
+          {group.chunks.map((chunk, i) => (
+            <div key={i}>
+              <button
+                type="button"
+                onClick={() => setActiveIdx(activeIdx === i ? null : i)}
+                className="flex items-center gap-1.5 text-[0.65rem] text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer"
+              >
+                <span className="text-zinc-700">{activeIdx === i ? '▾' : '▸'}</span>
+                <span>
+                  {chunk.section
+                    ? <span className="text-zinc-400">{chunk.section}</span>
+                    : <span className="text-zinc-600">Trecho {i + 1}</span>
+                  }
+                  <span className="text-zinc-700 ml-1">— {Math.round(chunk.similarity * 100)}%</span>
+                </span>
+              </button>
+
+              {activeIdx === i && chunk.content && (
+                <div className="mt-1.5 ml-3 px-3 py-2.5 bg-zinc-900/80 border border-zinc-700/50 rounded-lg text-[0.7rem] text-zinc-400 leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto">
+                  {chunk.content}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function SourcesList({ sources }: { sources: MessageSource[] }) {
   if (sources.length === 0) return null
+  const groups = groupSources(sources)
   return (
     <div className="mt-3 pt-3 border-t border-zinc-700/50">
-      <p className="text-[0.6rem] uppercase tracking-widest text-zinc-600 mb-1.5">Fontes</p>
-      <div className="flex flex-col gap-1.5">
-        {sources.map((s, i) => (
-          <div key={i} className="flex items-start gap-1.5 text-xs">
-            <span className="text-zinc-700 mt-0.5 shrink-0">·</span>
-            <span>
-              <span className="text-zinc-400">{s.source}</span>
-              {s.section && (
-                <span className="text-zinc-600"> — {s.section}</span>
-              )}
-              <span className="text-zinc-700 ml-1.5">
-                {Math.round(s.similarity * 100)}% relevância
-              </span>
-            </span>
-          </div>
+      <p className="text-[0.6rem] uppercase tracking-widest text-zinc-600 mb-2">Fontes</p>
+      <div className="flex flex-col gap-2.5">
+        {groups.map((g) => (
+          <SourceItem key={g.source} group={g} />
         ))}
       </div>
     </div>

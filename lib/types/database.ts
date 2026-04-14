@@ -10,6 +10,7 @@ export type MessageSource = {
   source:     string
   section:    string | null
   similarity: number
+  content?:   string   // original chunk text (stored for click-to-expand)
 }
 
 export type Database = {
