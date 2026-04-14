@@ -40,8 +40,9 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient()
   const { data: rawChunks, error: rpcError } = await supabase.rpc('match_documents', {
     query_embedding: queryEmbedding,
-    match_threshold: 0.50,
-    match_count: 5,
+    query_text:      userMessage,
+    match_threshold: 0.35,
+    match_count:     12,
   })
 
   if (rpcError) {
@@ -71,7 +72,7 @@ export async function POST(request: NextRequest) {
     gptStream = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       stream: true,
-      max_tokens: 700,
+      max_tokens: 900,
       temperature: 0.3,
       messages: [
         { role: 'system', content: systemPrompt },

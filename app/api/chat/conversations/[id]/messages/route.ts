@@ -115,11 +115,12 @@ export async function POST(
         })
         const queryEmbedding = embeddingRes.data[0].embedding
 
-        // 2. RAG retrieval
+        // 2. RAG retrieval — hybrid vector + full-text search
         const { data: rawChunks, error: rpcError } = await supabase.rpc('match_documents', {
           query_embedding: queryEmbedding,
-          match_threshold: 0.50,
-          match_count:     5,
+          query_text:      userMessage,
+          match_threshold: 0.35,
+          match_count:     12,
         })
         if (rpcError) console.error('[messages] match_documents error:', rpcError.message)
 
@@ -160,7 +161,7 @@ export async function POST(
         const gptStream = await openai.chat.completions.create({
           model:       'gpt-4o-mini',
           stream:      true,
-          max_tokens:  700,
+          max_tokens:  900,
           temperature: 0.3,
           messages: [
             { role: 'system',  content: systemPrompt },

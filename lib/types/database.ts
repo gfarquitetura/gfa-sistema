@@ -372,6 +372,7 @@ export type Database = {
       match_documents: {
         Args: {
           query_embedding: number[]
+          query_text?:     string
           match_threshold?: number
           match_count?: number
         }
