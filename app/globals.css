@@ -40,7 +40,8 @@ select:focus {
 
 /* ── Table row hover ──────────────────────────────────────── */
 tbody tr:hover td {
-  background-color: rgba(255, 255, 255, 0.02);
+  background-color: rgba(255, 255, 255, 0.035);
+  cursor: pointer;
 }
 
 /* ── Primary button (brand red) ───────────────────────────── */
