@@ -125,7 +125,7 @@ export async function changeUserRole(
 }
 
 // ============================================================
-// Resend invite email
+// Resend invite / send password reset email
 // ============================================================
 export async function resendInvite(
   _prev: UserActionState,
@@ -136,16 +136,14 @@ export async function resendInvite(
   const email = formData.get('email') as string
   if (!email) return { error: 'E-mail inválido.' }
 
-  const admin = createAdminClient()
+  const supabase = await createClient()
 
-  const { error } = await admin.auth.admin.generateLink({
-    type: 'invite',
-    email,
-  })
+  // resetPasswordForEmail actually sends the email (generateLink does not)
+  const { error } = await supabase.auth.resetPasswordForEmail(email)
 
-  if (error) return { error: `Erro ao reenviar convite: ${error.message}` }
+  if (error) return { error: `Erro ao enviar e-mail: ${error.message}` }
 
-  return { success: `Convite reenviado para ${email}.` }
+  return { success: `E-mail de redefinição de senha enviado para ${email}.` }
 }
 
 // ============================================================
