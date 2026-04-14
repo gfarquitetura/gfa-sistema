@@ -51,6 +51,7 @@ const NAV_ITEMS = [
   { label: 'Financeiro',   href: '/sistema/financeiro',     icon: 'banknotes', permission: 'finances:read' },
   { label: 'Apontamentos', href: '/sistema/apontamentos',   icon: 'clock',     permission: 'timesheets:submit' },
   { label: 'Relatórios',   href: '/sistema/relatorios',     icon: 'chart',     permission: 'reports:read' },
+  { label: 'Assistente',  href: '/sistema/assistente',     icon: 'brain' },
   { label: 'Usuários',     href: '/sistema/admin/usuarios',          icon: 'cog',   permission: 'users:manage' },
   { label: 'Base de IA',  href: '/sistema/admin/base-conhecimento', icon: 'brain', permission: 'users:manage' },
 ] as const

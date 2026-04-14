@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
 type Message = {
@@ -132,6 +133,13 @@ export function ChatAssistant() {
               <p className="text-xs font-semibold text-zinc-100 leading-tight">Assistente de Normas</p>
               <p className="text-[0.6rem] text-red-300/70 truncate">GFA Projetos · NBR · ANVISA · Prefeitura</p>
             </div>
+            <Link
+              href="/sistema/assistente"
+              className="text-[0.6rem] text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer whitespace-nowrap"
+              title="Abrir chat completo"
+            >
+              Tela cheia ↗
+            </Link>
             {messages.length > 0 && (
               <button
                 type="button"
