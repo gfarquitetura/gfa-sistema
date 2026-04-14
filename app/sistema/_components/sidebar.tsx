@@ -134,12 +134,18 @@ export function Sidebar({ role, userEmail, fullName }: SidebarProps) {
               )}
               <Link
                 href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors ${
+                className={`relative flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors ${
                   active
                     ? 'bg-zinc-800/80 text-zinc-100'
                     : 'text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900'
                 }`}
               >
+                {active && (
+                  <span
+                    className="absolute left-0 top-1 bottom-1 w-0.5 rounded-full"
+                    style={{ background: '#C0392B' }}
+                  />
+                )}
                 <Icon
                   name={item.icon}
                   className="w-[1.05rem] h-[1.05rem] shrink-0 transition-colors"
