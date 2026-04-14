@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
@@ -154,7 +155,20 @@ function LogoMark({ size = 28 }: { size?: number }) {
   )
 }
 
-export default function LandingPage() {
+export default async function LandingPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | undefined>>
+}) {
+  // Supabase auth callbacks sometimes land here instead of /auth/callback.
+  // Forward any auth params so the callback route can handle them.
+  const params = await searchParams
+  if (params.code || params.token_hash) {
+    const qs = new URLSearchParams(
+      Object.entries(params).filter((e): e is [string, string] => e[1] !== undefined)
+    ).toString()
+    redirect(`/auth/callback?${qs}`)
+  }
   return (
     <div
       className="min-h-screen bg-zinc-950 text-zinc-100"
