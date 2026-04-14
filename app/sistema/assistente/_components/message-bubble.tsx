@@ -6,16 +6,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { ConversationMessage, MessageSource } from '@/lib/types/database'
 
 // ── Citation popover ──────────────────────────────────────────────────────
-// Rendered when the LLM outputs **[Source › Section]** inside the answer.
-
-function extractText(children: React.ReactNode): string {
-  if (typeof children === 'string') return children
-  if (Array.isArray(children)) return children.map(extractText).join('')
-  if (children !== null && typeof children === 'object' && 'props' in (children as React.ReactElement)) {
-    return extractText((children as React.ReactElement<{ children?: React.ReactNode }>).props.children)
-  }
-  return ''
-}
+// Rendered when the LLM outputs `[Source › Section]` (inline code) in the answer.
 
 function findChunk(label: string, chunks: MessageSource[]): MessageSource | null {
   // label looks like: [DODF 043 › Art. 28]  or  [NBR 9050 › 4.2.1]
@@ -217,14 +208,9 @@ function MarkdownContent({ content, chunks }: { content: string; chunks: Message
         p: ({ children }) => (
           <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>
         ),
-        strong: ({ children }) => {
-          const text = extractText(children)
-          // Detect citation pattern: [anything] — produced by the LLM as **[Source › Section]**
-          if (text.startsWith('[') && text.endsWith(']') && chunks.length > 0) {
-            return <CitationButton label={text} chunks={chunks} />
-          }
-          return <strong className="font-semibold text-zinc-100">{children}</strong>
-        },
+        strong: ({ children }) => (
+          <strong className="font-semibold text-zinc-100">{children}</strong>
+        ),
         em: ({ children }) => (
           <em className="italic text-zinc-400">{children}</em>
         ),
@@ -264,9 +250,15 @@ function MarkdownContent({ content, chunks }: { content: string; chunks: Message
         ),
         code: ({ children, className }) => {
           const isBlock = Boolean(className)
-          return isBlock ? (
-            <code className="font-mono text-zinc-300">{children}</code>
-          ) : (
+          if (isBlock) {
+            return <code className="font-mono text-zinc-300">{children}</code>
+          }
+          const text = String(children)
+          // Citation pattern: `[Source › Section]` — instructed in system prompt
+          if (text.startsWith('[') && text.endsWith(']') && chunks.length > 0) {
+            return <CitationButton label={text} chunks={chunks} />
+          }
+          return (
             <code className="bg-zinc-900 rounded px-1.5 py-0.5 text-xs font-mono text-red-300">
               {children}
             </code>
