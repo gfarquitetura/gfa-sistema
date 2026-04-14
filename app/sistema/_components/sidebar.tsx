@@ -45,15 +45,18 @@ function Icon({ name, className = 'w-4 h-4' }: { name: string; className?: strin
 }
 
 const NAV_ITEMS = [
-  { label: 'Painel',       href: '/sistema',                icon: 'home' },
-  { label: 'Clientes',     href: '/sistema/clientes',       icon: 'users',     permission: 'clients:read' },
-  { label: 'Projetos',     href: '/sistema/projetos',       icon: 'folder',    permission: 'projects:read' },
-  { label: 'Financeiro',   href: '/sistema/financeiro',     icon: 'banknotes', permission: 'finances:read' },
-  { label: 'Apontamentos', href: '/sistema/apontamentos',   icon: 'clock',     permission: 'timesheets:submit' },
-  { label: 'Relatórios',   href: '/sistema/relatorios',     icon: 'chart',     permission: 'reports:read' },
-  { label: 'Assistente',  href: '/sistema/assistente',     icon: 'brain' },
-  { label: 'Usuários',     href: '/sistema/admin/usuarios',          icon: 'cog',   permission: 'users:manage' },
-  { label: 'Base de IA',  href: '/sistema/admin/base-conhecimento', icon: 'brain', permission: 'users:manage' },
+  // ── Main ──────────────────────────────────────────────────────────
+  { label: 'Painel',       href: '/sistema',                icon: 'home',      section: 'main' },
+  { label: 'Clientes',     href: '/sistema/clientes',       icon: 'users',     section: 'main', permission: 'clients:read' },
+  { label: 'Projetos',     href: '/sistema/projetos',       icon: 'folder',    section: 'main', permission: 'projects:read' },
+  { label: 'Financeiro',   href: '/sistema/financeiro',     icon: 'banknotes', section: 'main', permission: 'finances:read' },
+  { label: 'Apontamentos', href: '/sistema/apontamentos',   icon: 'clock',     section: 'main', permission: 'timesheets:submit' },
+  { label: 'Relatórios',   href: '/sistema/relatorios',     icon: 'chart',     section: 'main', permission: 'reports:read' },
+  // ── AI ─────────────────────────────────────────────────────────────
+  { label: 'Assistente',   href: '/sistema/assistente',               icon: 'brain', section: 'ai' },
+  { label: 'Base de IA',   href: '/sistema/admin/base-conhecimento',  icon: 'brain', section: 'ai', permission: 'users:manage' },
+  // ── Admin ──────────────────────────────────────────────────────────
+  { label: 'Usuários',     href: '/sistema/admin/usuarios', icon: 'cog',       section: 'admin', permission: 'users:manage' },
 ] as const
 
 interface SidebarProps {
@@ -103,31 +106,36 @@ export function Sidebar({ role, userEmail, fullName }: SidebarProps) {
 
       {/* Nav */}
       <nav className="flex flex-col gap-0.5 flex-1">
-        {visibleItems.map((item) => {
+        {visibleItems.map((item, idx) => {
           const active =
             item.href === '/sistema'
               ? pathname === '/sistema'
               : pathname.startsWith(item.href)
 
+          const prevSection = idx > 0 ? visibleItems[idx - 1].section : null
+          const showDivider = prevSection !== null && item.section !== prevSection
+
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors ${
-                active
-                  ? 'bg-zinc-800/80 text-zinc-100'
-                  : 'text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900'
-              }`}
-            >
-              <Icon
-                name={item.icon}
-                className={`w-[1.05rem] h-[1.05rem] shrink-0 transition-colors ${
-                  active ? '' : ''
+            <div key={item.href}>
+              {showDivider && (
+                <div className="mx-1 my-2 h-px bg-zinc-800/70" />
+              )}
+              <Link
+                href={item.href}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors ${
+                  active
+                    ? 'bg-zinc-800/80 text-zinc-100'
+                    : 'text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900'
                 }`}
-                {...(active ? { style: { color: '#C0392B' } } : {})}
-              />
-              {item.label}
-            </Link>
+              >
+                <Icon
+                  name={item.icon}
+                  className="w-[1.05rem] h-[1.05rem] shrink-0 transition-colors"
+                  {...(active ? { style: { color: '#C0392B' } } : {})}
+                />
+                {item.label}
+              </Link>
+            </div>
           )
         })}
       </nav>
