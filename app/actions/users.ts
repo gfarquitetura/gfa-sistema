@@ -50,7 +50,7 @@ export async function createUser(
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://gfa-sistema-gfarquitetura.vercel.app'
   const { data, error } = await admin.auth.admin.inviteUserByEmail(email, {
     data:       { full_name, role },
-    redirectTo: `${siteUrl}/auth/callback`,
+    redirectTo: `${siteUrl}/auth/callback?next=/auth/definir-senha`,
   })
 
   if (error) {
@@ -143,7 +143,7 @@ export async function resendInvite(
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://gfa-sistema-gfarquitetura.vercel.app'
   // resetPasswordForEmail actually sends the email (generateLink does not)
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${siteUrl}/auth/callback`,
+    redirectTo: `${siteUrl}/auth/callback?next=/auth/definir-senha`,
   })
 
   if (error) return { error: `Erro ao enviar e-mail: ${error.message}` }
