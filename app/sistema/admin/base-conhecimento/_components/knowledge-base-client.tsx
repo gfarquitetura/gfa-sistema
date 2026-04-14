@@ -1,6 +1,7 @@
 'use client'
 
-import { useRef, useState, useTransition } from 'react'
+import { useActionState, useRef, useState, useTransition } from 'react'
+import { resetAIData, type AIActionState } from '@/app/actions/ai'
 
 type DocSource = {
   source: string
@@ -22,6 +23,11 @@ export function KnowledgeBaseClient({ initialSources }: { initialSources: DocSou
   const [deletingSource, setDeletingSource] = useState<string | null>(null)
   const [, startTransition]             = useTransition()
   const fileRef                         = useRef<HTMLInputElement>(null)
+
+  // Reset AI data
+  const [resetState, resetAction, resetting] = useActionState<AIActionState, FormData>(resetAIData, undefined)
+  const [resetConfirm, setResetConfirm]      = useState('')
+  const [showResetForm, setShowResetForm]    = useState(false)
 
   async function handleUpload(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -222,6 +228,75 @@ export function KnowledgeBaseClient({ initialSources }: { initialSources: DocSou
               </div>
             ))}
           </div>
+        )}
+      </div>
+
+      {/* ── Danger Zone ─────────────────────────────────────────────── */}
+      <div className="border border-red-900/40 rounded-xl p-6">
+        <h2 className="text-sm font-semibold uppercase tracking-widest mb-1" style={{ color: '#C0392B' }}>
+          Zona de perigo
+        </h2>
+        <p className="text-xs text-zinc-500 mb-4">
+          Apaga permanentemente toda a base de conhecimento (chunks, embeddings, arquivos) e o histórico de conversas de todos os usuários.
+          Esta ação não pode ser desfeita.
+        </p>
+
+        {!showResetForm ? (
+          <button
+            type="button"
+            onClick={() => setShowResetForm(true)}
+            className="text-sm px-4 py-2 rounded-lg border border-red-900/50 text-red-400 hover:bg-red-950/40 transition-colors cursor-pointer"
+          >
+            Resetar dados de IA…
+          </button>
+        ) : (
+          <form
+            action={(fd) => {
+              resetAction(fd)
+              setResetConfirm('')
+            }}
+            className="space-y-3"
+          >
+            <p className="text-xs text-zinc-400">
+              Digite <span className="font-mono font-semibold text-red-400">RESETAR</span> para confirmar:
+            </p>
+            <input
+              name="confirmation"
+              type="text"
+              value={resetConfirm}
+              onChange={(e) => setResetConfirm(e.target.value)}
+              autoComplete="off"
+              placeholder="RESETAR"
+              className="block w-64 bg-zinc-800 border border-zinc-700 text-zinc-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-red-800 font-mono"
+            />
+
+            {resetState && 'error' in resetState && (
+              <p className="text-sm text-red-400">{resetState.error}</p>
+            )}
+            {resetState && 'success' in resetState && (
+              <p className="text-sm text-emerald-400">
+                {resetState.success} {resetState.details}
+              </p>
+            )}
+
+            <div className="flex gap-3">
+              <button
+                type="submit"
+                disabled={resetConfirm !== 'RESETAR' || resetting}
+                className="text-sm px-4 py-2 rounded-lg text-white transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ background: '#8B1A1A' }}
+              >
+                {resetting ? 'Apagando…' : 'Confirmar reset'}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setShowResetForm(false); setResetConfirm('') }}
+                className="text-sm px-4 py-2 rounded-lg border border-zinc-700 text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
         )}
       </div>
     </div>

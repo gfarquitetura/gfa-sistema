@@ -40,3 +40,6 @@ export type AuditAction =
   | 'timesheet.submitted'
   | 'timesheet.approved'
   | 'timesheet.rejected'
+
+  // AI (Phase 6)
+  | 'ai.data_reset'
