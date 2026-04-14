@@ -45,10 +45,12 @@ export async function createUser(
 
   const admin = createAdminClient()
 
-  // inviteUserByEmail creates the account AND sends the invitation email
-  // The user clicks the link in the email to set their password
+  // inviteUserByEmail creates the account AND sends the invitation email.
+  // redirectTo must be listed in Supabase Dashboard > Auth > Redirect URLs.
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://gfa-sistema-gfarquitetura.vercel.app'
   const { data, error } = await admin.auth.admin.inviteUserByEmail(email, {
-    data: { full_name, role },
+    data:       { full_name, role },
+    redirectTo: `${siteUrl}/auth/callback`,
   })
 
   if (error) {
@@ -138,8 +140,11 @@ export async function resendInvite(
 
   const supabase = await createClient()
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://gfa-sistema-gfarquitetura.vercel.app'
   // resetPasswordForEmail actually sends the email (generateLink does not)
-  const { error } = await supabase.auth.resetPasswordForEmail(email)
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${siteUrl}/auth/callback`,
+  })
 
   if (error) return { error: `Erro ao enviar e-mail: ${error.message}` }
 

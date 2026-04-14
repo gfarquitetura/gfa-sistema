@@ -3,7 +3,12 @@ import { LoginForm } from './login-form'
 
 export const metadata: Metadata = { title: 'Acesso — GFA Projetos' }
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ erro?: string }>
+}) {
+  const { erro } = await searchParams
   return (
     <main className="min-h-screen bg-zinc-950 flex items-center justify-center px-4">
 
@@ -51,6 +56,11 @@ export default function LoginPage() {
           <p className="text-[0.65rem] uppercase tracking-[0.3em] text-zinc-500 text-center mb-7">
             Acesso ao Sistema
           </p>
+          {erro === 'link_invalido' && (
+            <p className="text-sm text-red-300 text-center bg-red-950/40 border border-red-900/60 rounded-lg py-2.5 px-3 mb-5">
+              Este link expirou ou já foi utilizado. Solicite um novo acesso ao administrador.
+            </p>
+          )}
           <LoginForm />
         </div>
 
