@@ -142,12 +142,15 @@ export default async function SistemaPage() {
 
   const BRAND = '#8B1A1A'
 
+  const hour = new Date().getHours()
+  const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite'
+
   return (
     <div className="p-8 max-w-6xl">
 
       {/* Greeting */}
       <div className="mb-8 pb-6 border-b border-zinc-800/60">
-        <h1 className="text-2xl font-light text-zinc-100 tracking-tight">Olá, {firstName}</h1>
+        <h1 className="text-2xl font-semibold text-zinc-100 tracking-tight">{greeting}, {firstName}</h1>
         <p className="text-sm text-zinc-500 mt-1 capitalize">
           {new Date().toLocaleDateString('pt-BR', {
             weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
@@ -158,8 +161,28 @@ export default async function SistemaPage() {
       {/* KPI cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {([
-          { href: '/sistema/clientes', label: 'Clientes ativos', value: String(activeClients ?? 0), sub: `de ${totalClients ?? 0} cadastrados` },
-          { href: '/sistema/projetos', label: 'Projetos ativos', value: String(statusCounts['active'] ?? 0), sub: `de ${totalProjects ?? 0} no total` },
+          {
+            href: '/sistema/clientes',
+            label: 'Clientes ativos',
+            value: String(activeClients ?? 0),
+            sub: `de ${totalClients ?? 0} cadastrados`,
+            icon: (
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+              </svg>
+            ),
+          },
+          {
+            href: '/sistema/projetos',
+            label: 'Projetos ativos',
+            value: String(statusCounts['active'] ?? 0),
+            sub: `de ${totalProjects ?? 0} no total`,
+            icon: (
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v8.25m19.5 0v.243a2.25 2.25 0 0 1-2.182 2.25H4.432a2.25 2.25 0 0 1-2.182-2.25V6.75" />
+              </svg>
+            ),
+          },
         ] as const).map((card) => (
           <Link
             key={card.href}
@@ -167,30 +190,48 @@ export default async function SistemaPage() {
             className="group relative border border-zinc-800 rounded-xl p-5 bg-zinc-900/30 hover:border-zinc-700 hover:bg-zinc-900/60 transition-all overflow-hidden"
           >
             <div className="absolute top-0 left-0 w-0.5 h-full opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: BRAND }} />
-            <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500 mb-3">{card.label}</p>
-            <p className="text-3xl font-light text-zinc-100">{card.value}</p>
+            <div className="flex items-start justify-between mb-3">
+              <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500">{card.label}</p>
+              <span className="text-zinc-700 group-hover:text-zinc-500 transition-colors">{card.icon}</span>
+            </div>
+            <p className="text-3xl font-semibold text-zinc-100 tabular-nums">{card.value}</p>
             <p className="text-xs text-zinc-600 mt-1">{card.sub}</p>
           </Link>
         ))}
 
         <div className="border border-zinc-800 rounded-xl p-5 bg-zinc-900/30">
-          <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500 mb-3">Carteira ativa</p>
-          <p className="text-2xl font-light text-zinc-100 leading-tight">{formatBRL(activeContractValue)}</p>
+          <div className="flex items-start justify-between mb-3">
+            <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500">Carteira ativa</p>
+            <svg className="w-4 h-4 text-zinc-700" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+            </svg>
+          </div>
+          <p className="text-2xl font-semibold text-zinc-100 leading-tight tabular-nums">{formatBRL(activeContractValue)}</p>
           <p className="text-xs text-zinc-600 mt-1">em projetos ativos</p>
         </div>
 
         {canSeeFinances ? (
           <div className="border border-zinc-800 rounded-xl p-5 bg-zinc-900/30">
-            <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500 mb-3">Margem ativa</p>
-            <p className={`text-2xl font-light leading-tight ${overallMargin >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+            <div className="flex items-start justify-between mb-3">
+              <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500">Margem ativa</p>
+              <svg className="w-4 h-4 text-zinc-700" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" />
+              </svg>
+            </div>
+            <p className={`text-2xl font-semibold leading-tight tabular-nums ${overallMargin >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
               {formatBRL(overallMargin)}
             </p>
             <p className="text-xs text-zinc-600 mt-1">receita − despesas</p>
           </div>
         ) : (
           <div className="border border-zinc-800 rounded-xl p-5 bg-zinc-900/30">
-            <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500 mb-3">Carteira total</p>
-            <p className="text-2xl font-light text-zinc-100 leading-tight">{formatBRL(totalContractValue)}</p>
+            <div className="flex items-start justify-between mb-3">
+              <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500">Carteira total</p>
+              <svg className="w-4 h-4 text-zinc-700" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+              </svg>
+            </div>
+            <p className="text-2xl font-semibold text-zinc-100 leading-tight tabular-nums">{formatBRL(totalContractValue)}</p>
             <p className="text-xs text-zinc-600 mt-1">todos os projetos</p>
           </div>
         )}
@@ -199,25 +240,40 @@ export default async function SistemaPage() {
       {/* Financial health */}
       {canSeeFinances && (
         <div className="grid grid-cols-3 gap-4 mb-8">
-          <Link href="/sistema/financeiro" className="border border-zinc-800 rounded-xl p-5 bg-zinc-900/30 hover:border-zinc-700 transition-all">
-            <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500 mb-3">Total de despesas</p>
-            <p className="text-2xl font-light text-zinc-100">{formatBRL(totalExpenses)}</p>
+          <Link href="/sistema/financeiro" className="group border border-zinc-800 rounded-xl p-5 bg-zinc-900/30 hover:border-zinc-700 transition-all">
+            <div className="flex items-start justify-between mb-3">
+              <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500">Total de despesas</p>
+              <svg className="w-4 h-4 text-zinc-700 group-hover:text-zinc-500 transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6 9 12.75l4.286-4.286a11.948 11.948 0 0 1 4.306 6.43l.776 2.898m0 0 3.182-5.511m-3.182 5.51-5.511-3.181" />
+              </svg>
+            </div>
+            <p className="text-2xl font-semibold text-zinc-100 tabular-nums">{formatBRL(totalExpenses)}</p>
             <p className="text-xs text-zinc-600 mt-1">todos os registros</p>
           </Link>
 
           <div className="border border-zinc-800 rounded-xl p-5 bg-zinc-900/30">
-            <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500 mb-3">Receita ativa</p>
-            <p className="text-2xl font-light text-zinc-100">{formatBRL(activeContractValue)}</p>
+            <div className="flex items-start justify-between mb-3">
+              <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500">Receita ativa</p>
+              <svg className="w-4 h-4 text-zinc-700" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+            </div>
+            <p className="text-2xl font-semibold text-zinc-100 tabular-nums">{formatBRL(activeContractValue)}</p>
             <p className="text-xs text-zinc-600 mt-1">contratos em andamento</p>
           </div>
 
           {canSeeTimesheets && (
             <Link
               href={pendingApprovals > 0 ? '/sistema/apontamentos/aprovacoes' : '/sistema/apontamentos'}
-              className="border border-zinc-800 rounded-xl p-5 bg-zinc-900/30 hover:border-zinc-700 transition-all"
+              className="group border border-zinc-800 rounded-xl p-5 bg-zinc-900/30 hover:border-zinc-700 transition-all"
             >
-              <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500 mb-3">Aprovações pendentes</p>
-              <p className={`text-2xl font-light ${pendingApprovals > 0 ? 'text-yellow-400' : 'text-zinc-100'}`}>
+              <div className="flex items-start justify-between mb-3">
+                <p className="text-[0.65rem] uppercase tracking-widest text-zinc-500">Aprovações pendentes</p>
+                <svg className="w-4 h-4 text-zinc-700 group-hover:text-zinc-500 transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+              </div>
+              <p className={`text-2xl font-semibold tabular-nums ${pendingApprovals > 0 ? 'text-yellow-400' : 'text-zinc-100'}`}>
                 {pendingApprovals}
               </p>
               <p className="text-xs text-zinc-600 mt-1">apontamentos aguardando</p>
