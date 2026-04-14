@@ -34,6 +34,9 @@ function Icon({ name, className = 'w-4 h-4' }: { name: string; className?: strin
     brain: (
       <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
     ),
+    database: (
+      <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+    ),
   }
 
   return (
@@ -53,8 +56,8 @@ const NAV_ITEMS = [
   { label: 'Apontamentos', href: '/sistema/apontamentos',   icon: 'clock',     section: 'main', permission: 'timesheets:submit' },
   { label: 'Relatórios',   href: '/sistema/relatorios',     icon: 'chart',     section: 'main', permission: 'reports:read' },
   // ── AI ─────────────────────────────────────────────────────────────
-  { label: 'Assistente',   href: '/sistema/assistente',               icon: 'brain', section: 'ai' },
-  { label: 'Base de IA',   href: '/sistema/admin/base-conhecimento',  icon: 'brain', section: 'ai', permission: 'users:manage' },
+  { label: 'Assistente',   href: '/sistema/assistente',               icon: 'brain',    section: 'ai' },
+  { label: 'Base de IA',   href: '/sistema/admin/base-conhecimento',  icon: 'database', section: 'ai', permission: 'users:manage' },
   // ── Admin ──────────────────────────────────────────────────────────
   { label: 'Usuários',     href: '/sistema/admin/usuarios', icon: 'cog',       section: 'admin', permission: 'users:manage' },
 ] as const
@@ -113,12 +116,21 @@ export function Sidebar({ role, userEmail, fullName }: SidebarProps) {
               : pathname.startsWith(item.href)
 
           const prevSection = idx > 0 ? visibleItems[idx - 1].section : null
-          const showDivider = prevSection !== null && item.section !== prevSection
+          const isNewSection = prevSection !== null && item.section !== prevSection
+
+          const SECTION_LABELS: Record<string, string> = {
+            ai:    'Inteligência',
+            admin: 'Administração',
+          }
 
           return (
             <div key={item.href}>
-              {showDivider && (
-                <div className="mx-1 my-2 h-px bg-zinc-800/70" />
+              {isNewSection && (
+                <div className="mt-4 mb-1 px-3">
+                  <span className="text-[0.55rem] uppercase tracking-[0.2em] text-zinc-700 font-medium select-none">
+                    {SECTION_LABELS[item.section] ?? item.section}
+                  </span>
+                </div>
               )}
               <Link
                 href={item.href}
