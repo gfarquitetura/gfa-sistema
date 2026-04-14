@@ -29,8 +29,6 @@ export async function GET(request: NextRequest) {
   if (!bucketExists) {
     const { error: createErr } = await admin.storage.createBucket('pdf-uploads', {
       public: false,
-      fileSizeLimit: 314572800, // 300 MB
-      allowedMimeTypes: ['application/pdf'],
     })
     if (createErr) {
       console.error('[upload-url] createBucket error:', createErr.message)
