@@ -298,9 +298,9 @@ export default async function SistemaPage() {
                     </span>
                     <span className="text-sm text-zinc-300 tabular-nums">{count}</span>
                   </div>
-                  <div className="h-1 rounded-full bg-zinc-800">
+                  <div className="h-1.5 rounded-full bg-zinc-800">
                     <div
-                      className="h-1 rounded-full transition-all"
+                      className="h-1.5 rounded-full transition-all"
                       style={{
                         width: `${pct}%`,
                         background: s === 'active' ? BRAND : '#52525b',
@@ -401,7 +401,7 @@ export default async function SistemaPage() {
                     </td>
                     <td className="py-3 pl-4 w-28">
                       {p.contract_value > 0 && p.expenses > 0 && (
-                        <div className="h-1 rounded-full bg-zinc-800 overflow-hidden">
+                        <div className="h-1.5 rounded-full bg-zinc-800 overflow-hidden">
                           <div
                             className={`h-full rounded-full ${p.margin >= 0 ? 'bg-emerald-700' : 'bg-red-800'}`}
                             style={{ width: `${Math.min(100, Math.max(0, (p.expenses / p.contract_value) * 100))}%` }}
