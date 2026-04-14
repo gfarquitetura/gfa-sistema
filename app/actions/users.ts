@@ -45,24 +45,18 @@ export async function createUser(
 
   const admin = createAdminClient()
 
-  const { data, error } = await admin.auth.admin.createUser({
-    email,
-    email_confirm: true,
-    user_metadata: { full_name, role },
+  // inviteUserByEmail creates the account AND sends the invitation email
+  // The user clicks the link in the email to set their password
+  const { data, error } = await admin.auth.admin.inviteUserByEmail(email, {
+    data: { full_name, role },
   })
 
   if (error) {
-    if (error.message.includes('already registered')) {
+    if (error.message.includes('already registered') || error.message.includes('already been registered')) {
       return { error: 'Este e-mail já está cadastrado.' }
     }
-    return { error: 'Erro ao criar usuário. Tente novamente.' }
+    return { error: `Erro ao convidar usuário: ${error.message}` }
   }
-
-  // Send password setup email
-  await admin.auth.admin.generateLink({
-    type: 'recovery',
-    email,
-  })
 
   await logAudit({
     action: 'user.created',
@@ -72,7 +66,7 @@ export async function createUser(
   })
 
   revalidatePath('/sistema/admin/usuarios')
-  return { success: `Usuário ${full_name} criado. Um e-mail de acesso foi enviado.` }
+  return { success: `Convite enviado para ${email}. O usuário receberá um e-mail para definir a senha.` }
 }
 
 // ============================================================
@@ -128,6 +122,30 @@ export async function changeUserRole(
 
   revalidatePath('/sistema/admin/usuarios')
   return { success: 'Perfil atualizado.' }
+}
+
+// ============================================================
+// Resend invite email
+// ============================================================
+export async function resendInvite(
+  _prev: UserActionState,
+  formData: FormData
+): Promise<UserActionState> {
+  await requireAdmin()
+
+  const email = formData.get('email') as string
+  if (!email) return { error: 'E-mail inválido.' }
+
+  const admin = createAdminClient()
+
+  const { error } = await admin.auth.admin.generateLink({
+    type: 'invite',
+    email,
+  })
+
+  if (error) return { error: `Erro ao reenviar convite: ${error.message}` }
+
+  return { success: `Convite reenviado para ${email}.` }
 }
 
 // ============================================================

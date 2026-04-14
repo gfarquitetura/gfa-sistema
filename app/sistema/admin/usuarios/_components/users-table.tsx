@@ -1,7 +1,7 @@
 'use client'
 
 import { useActionState } from 'react'
-import { changeUserRole, toggleUserStatus, type UserActionState } from '@/app/actions/users'
+import { changeUserRole, resendInvite, toggleUserStatus, type UserActionState } from '@/app/actions/users'
 import { ROLE_LABELS } from '@/lib/auth/roles'
 import type { Profile, Role } from '@/lib/types/database'
 
@@ -35,6 +35,10 @@ function UserRow({ user, currentUserId }: { user: Profile; currentUserId: string
   )
   const [statusState, statusAction, statusPending] = useActionState<UserActionState, FormData>(
     toggleUserStatus,
+    undefined
+  )
+  const [inviteState, inviteAction, invitePending] = useActionState<UserActionState, FormData>(
+    resendInvite,
     undefined
   )
 
@@ -92,26 +96,43 @@ function UserRow({ user, currentUserId }: { user: Profile; currentUserId: string
 
       {/* Actions */}
       <td className="px-4 py-3.5 text-right">
-        {!isSelf && (
-          <form action={statusAction}>
-            <input type="hidden" name="user_id" value={user.id} />
-            <input type="hidden" name="is_active" value={String(user.is_active)} />
+        <div className="flex flex-col items-end gap-1.5">
+          {/* Resend invite */}
+          <form action={inviteAction}>
+            <input type="hidden" name="email" value={user.email} />
             <button
               type="submit"
-              disabled={statusPending}
-              className="text-xs text-zinc-600 hover:text-zinc-300 transition-colors disabled:opacity-40"
+              disabled={invitePending}
+              className="text-xs text-zinc-600 hover:text-zinc-300 transition-colors disabled:opacity-40 cursor-pointer"
             >
-              {statusPending
-                ? '...'
-                : user.is_active
-                ? 'Desativar'
-                : 'Reativar'}
+              {invitePending ? '...' : 'Reenviar convite'}
             </button>
-            {statusState && 'error' in statusState && (
-              <p className="text-xs text-red-400 mt-1">{statusState.error}</p>
-            )}
           </form>
-        )}
+          {inviteState && 'success' in inviteState && (
+            <p className="text-xs text-emerald-400">{inviteState.success}</p>
+          )}
+          {inviteState && 'error' in inviteState && (
+            <p className="text-xs text-red-400">{inviteState.error}</p>
+          )}
+
+          {/* Activate / deactivate */}
+          {!isSelf && (
+            <form action={statusAction}>
+              <input type="hidden" name="user_id" value={user.id} />
+              <input type="hidden" name="is_active" value={String(user.is_active)} />
+              <button
+                type="submit"
+                disabled={statusPending}
+                className="text-xs text-zinc-600 hover:text-zinc-300 transition-colors disabled:opacity-40 cursor-pointer"
+              >
+                {statusPending ? '...' : user.is_active ? 'Desativar' : 'Reativar'}
+              </button>
+              {statusState && 'error' in statusState && (
+                <p className="text-xs text-red-400 mt-1">{statusState.error}</p>
+              )}
+            </form>
+          )}
+        </div>
       </td>
     </tr>
   )
