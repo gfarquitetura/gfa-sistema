@@ -200,7 +200,18 @@ function SourcesList({ sources }: { sources: MessageSource[] }) {
 
 // ── Markdown renderer ─────────────────────────────────────────────────────
 
+/**
+ * Wraps bare [Source › Section] citation patterns in backticks so our
+ * `code` renderer can intercept them as CitationButton components.
+ * Works even when the LLM omits the backticks despite instructions.
+ * Skips patterns already in backticks and markdown links [text](url).
+ */
+function preprocessCitations(text: string): string {
+  return text.replace(/(?<!`)\[([^\]\n]+›[^\]\n]+)\](?!`|\()/g, '`[$1]`')
+}
+
 function MarkdownContent({ content, chunks }: { content: string; chunks: MessageSource[] }) {
+  const processed = chunks.length > 0 ? preprocessCitations(content) : content
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
@@ -280,7 +291,7 @@ function MarkdownContent({ content, chunks }: { content: string; chunks: Message
         hr: () => <hr className="border-zinc-700 my-3" />,
       }}
     >
-      {content}
+      {processed}
     </ReactMarkdown>
   )
 }
