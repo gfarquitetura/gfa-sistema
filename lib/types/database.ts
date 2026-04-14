@@ -5,6 +5,13 @@
 
 export type Role = 'admin' | 'financial' | 'manager' | 'readonly'
 
+// RAG source citation attached to assistant messages
+export type MessageSource = {
+  source:     string
+  section:    string | null
+  similarity: number
+}
+
 export type Database = {
   public: {
     Tables: {
@@ -288,6 +295,47 @@ export type Database = {
         Update: Record<string, never>
         Relationships: []
       }
+      conversations: {
+        Row: {
+          id:         string
+          profile_id: string
+          title:      string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?:        string
+          profile_id: string
+          title?:     string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          title?:      string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      conversation_messages: {
+        Row: {
+          id:              string
+          conversation_id: string
+          role:            'user' | 'assistant'
+          content:         string
+          sources:         MessageSource[] | null
+          created_at:      string
+        }
+        Insert: {
+          id?:             string
+          conversation_id: string
+          role:            'user' | 'assistant'
+          content:         string
+          sources?:        MessageSource[] | null
+          created_at?:     string
+        }
+        Update: Record<string, never>
+        Relationships: []
+      }
       profiles: {
         Row: {
           id: string
@@ -352,3 +400,5 @@ export type ExpenseCategory      = Database['public']['Tables']['expense_categor
 export type TimesheetEntry       = Database['public']['Tables']['timesheet_entries']['Row']
 export type TimesheetEntryStatus = TimesheetEntry['status']
 export type AiDocument           = Database['public']['Tables']['ai_documents']['Row']
+export type Conversation         = Database['public']['Tables']['conversations']['Row']
+export type ConversationMessage  = Database['public']['Tables']['conversation_messages']['Row']
