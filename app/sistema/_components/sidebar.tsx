@@ -57,7 +57,6 @@ const NAV_ITEMS = [
   { label: 'Relatórios',   href: '/sistema/relatorios',     icon: 'chart',     section: 'main', permission: 'reports:read' },
   // ── AI ─────────────────────────────────────────────────────────────
   { label: 'Assistente',   href: '/sistema/assistente',               icon: 'brain',    section: 'ai' },
-  { label: 'Base de IA',   href: '/sistema/admin/base-conhecimento',  icon: 'database', section: 'ai', permission: 'users:manage' },
   // ── Admin ──────────────────────────────────────────────────────────
   { label: 'Usuários',     href: '/sistema/admin/usuarios', icon: 'cog',       section: 'admin', permission: 'users:manage' },
 ] as const
