@@ -3,31 +3,14 @@
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { getProfile } from '@/lib/auth/get-profile'
-import { hasPermission } from '@/lib/auth/roles'
+import { requirePermission } from '@/lib/auth/guards'
 import { logAudit } from '@/lib/audit/log'
 import { parseHoursInput } from '@/lib/timesheets/format'
 
 export type TimesheetActionState = { error: string } | { success: string } | undefined
 
-// ============================================================
-// Permission guards
-// ============================================================
-async function requireSubmit() {
-  const profile = await getProfile()
-  if (!profile || !hasPermission(profile.role, 'timesheets:submit')) {
-    throw new Error('Sem permissão.')
-  }
-  return profile
-}
-
-async function requireApprove() {
-  const profile = await getProfile()
-  if (!profile || !hasPermission(profile.role, 'timesheets:approve')) {
-    throw new Error('Sem permissão.')
-  }
-  return profile
-}
+const requireSubmit  = () => requirePermission('timesheets:submit')
+const requireApprove = () => requirePermission('timesheets:approve')
 
 // ============================================================
 // Zod schema

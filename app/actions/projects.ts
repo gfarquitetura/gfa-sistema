@@ -3,8 +3,7 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { getProfile } from '@/lib/auth/get-profile'
-import { hasPermission } from '@/lib/auth/roles'
+import { requirePermission } from '@/lib/auth/guards'
 import { logAudit } from '@/lib/audit/log'
 import { projectSchema } from '@/lib/projects/validation'
 import { parseBRLtoCents, VALID_TRANSITIONS } from '@/lib/projects/format'
@@ -15,16 +14,7 @@ export type ProjectActionState =
   | { success: string; id?: string }
   | undefined
 
-// ============================================================
-// Guard
-// ============================================================
-async function requireProjectsManage() {
-  const profile = await getProfile()
-  if (!profile || !hasPermission(profile.role, 'projects:manage')) {
-    throw new Error('Sem permissão.')
-  }
-  return profile
-}
+const requireProjectsManage = () => requirePermission('projects:manage')
 
 function extractProjectData(formData: FormData) {
   const rawValue = formData.get('contract_value') as string
@@ -187,6 +177,18 @@ export async function addProjectMember(
   const memberRole = (formData.get('member_role') as string) || 'collaborator'
 
   const supabase = await createClient()
+
+  const { data: project } = await supabase
+    .from('projects')
+    .select('created_by')
+    .eq('id', projectId)
+    .single()
+
+  if (!project) return { error: 'Projeto não encontrado.' }
+  if (caller.role !== 'admin' && project.created_by !== caller.id) {
+    return { error: 'Sem permissão para modificar membros deste projeto.' }
+  }
+
   const { error } = await supabase
     .from('project_members')
     .insert({ project_id: projectId, profile_id: profileId, member_role: memberRole as 'responsible' | 'collaborator' })
@@ -219,6 +221,18 @@ export async function removeProjectMember(
   const memberId  = formData.get('member_id') as string
 
   const supabase = await createClient()
+
+  const { data: project } = await supabase
+    .from('projects')
+    .select('created_by')
+    .eq('id', projectId)
+    .single()
+
+  if (!project) return { error: 'Projeto não encontrado.' }
+  if (caller.role !== 'admin' && project.created_by !== caller.id) {
+    return { error: 'Sem permissão para modificar membros deste projeto.' }
+  }
+
   const { error } = await supabase
     .from('project_members')
     .delete()

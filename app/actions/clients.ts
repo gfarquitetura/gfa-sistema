@@ -3,8 +3,7 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient as createSupabaseClient } from '@/lib/supabase/server'
-import { getProfile } from '@/lib/auth/get-profile'
-import { hasPermission } from '@/lib/auth/roles'
+import { requirePermission } from '@/lib/auth/guards'
 import { logAudit } from '@/lib/audit/log'
 import { clientSchema } from '@/lib/clients/validation'
 import { digitsOnly } from '@/lib/clients/format'
@@ -14,16 +13,7 @@ export type ClientActionState =
   | { success: string; id?: string }
   | undefined
 
-// ============================================================
-// Guards
-// ============================================================
-async function requireClientsManage() {
-  const profile = await getProfile()
-  if (!profile || !hasPermission(profile.role, 'clients:manage')) {
-    throw new Error('Sem permissão.')
-  }
-  return profile
-}
+const requireClientsManage = () => requirePermission('clients:manage')
 
 // ============================================================
 // Helpers — extract and normalize formData into raw digits

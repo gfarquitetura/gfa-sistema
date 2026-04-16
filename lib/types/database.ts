@@ -298,22 +298,25 @@ export type Database = {
       }
       conversations: {
         Row: {
-          id:         string
-          profile_id: string
-          title:      string
-          created_at: string
-          updated_at: string
+          id:                  string
+          profile_id:          string
+          title:               string
+          ai_conversation_id:  string | null
+          created_at:          string
+          updated_at:          string
         }
         Insert: {
-          id?:        string
-          profile_id: string
-          title?:     string
-          created_at?: string
-          updated_at?: string
+          id?:                 string
+          profile_id:          string
+          title?:              string
+          ai_conversation_id?: string | null
+          created_at?:         string
+          updated_at?:         string
         }
         Update: {
-          title?:      string
-          updated_at?: string
+          title?:              string
+          ai_conversation_id?: string | null
+          updated_at?:         string
         }
         Relationships: []
       }
@@ -357,12 +360,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          id?: string
           full_name?: string
-          email?: string
           role?: Role
           is_active?: boolean
-          created_at?: string
           updated_at?: string
         }
         Relationships: []

@@ -2,8 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { getProfile } from '@/lib/auth/get-profile'
-import { hasPermission } from '@/lib/auth/roles'
+import { requirePermission } from '@/lib/auth/guards'
 import { logAudit } from '@/lib/audit/log'
 import { parseBRLtoCents } from '@/lib/projects/format'
 import { z } from 'zod'
@@ -13,20 +12,11 @@ export type FinanceActionState =
   | { success: string }
   | undefined
 
-// ============================================================
-// Guard
-// ============================================================
-async function requireFinancesManage() {
-  const profile = await getProfile()
-  if (!profile || !hasPermission(profile.role, 'finances:manage')) {
-    throw new Error('Sem permissão.')
-  }
-  return profile
-}
+const requireFinancesManage = () => requirePermission('finances:manage')
 
 const expenseSchema = z.object({
   description:  z.string().min(2, 'Descrição deve ter ao menos 2 caracteres.').max(300),
-  amount:       z.number().int().min(1, 'Valor deve ser maior que zero.'),
+  amount:       z.number().int().min(1, 'Valor deve ser maior que zero.').max(50_000_000, 'Valor máximo é R$ 500.000,00.'),
   expense_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data inválida.'),
   project_id:   z.string().uuid().optional().nullable(),
   category_id:  z.string().uuid().optional().nullable(),

@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import OpenAI from 'openai'
 import { createClient } from '@/lib/supabase/server'
 import { getProfile } from '@/lib/auth/get-profile'
-import { buildSystemPrompt, type RetrievedChunk } from '@/lib/ai/system-prompt'
+import { chatStream } from '@/lib/ai/aireponado'
+import { rateLimit } from '@/lib/rate-limit'
 import type { MessageSource } from '@/lib/types/database'
 
 export const maxDuration = 300
-
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
 // Helper — encode one SSE data line
 function sseEvent(obj: object): Uint8Array {
@@ -25,7 +23,6 @@ export async function GET(
   const { id } = await params
   const supabase = await createClient()
 
-  // Verify ownership
   const { data: conv } = await supabase
     .from('conversations')
     .select('id')
@@ -47,12 +44,13 @@ export async function GET(
 }
 
 // ── POST — send a message and stream the assistant response ───────────
-// Body: { message: string }
+// Proxies to Aireponado and mirrors SSE events back to the browser.
+// Still persists user + assistant messages to gfa's own DB for the UI.
 //
-// SSE event types emitted:
+// SSE event types forwarded to client:
 //   { type: 'sources', sources: MessageSource[] }
 //   { type: 'chunk',   text: string }
-//   { type: 'done',    title: string | null }   ← title set only on 1st message
+//   { type: 'done',    title: string | null }
 //   { type: 'error',   message: string }
 export async function POST(
   request: NextRequest,
@@ -61,9 +59,13 @@ export async function POST(
   const profile = await getProfile()
   if (!profile) return new NextResponse('Não autorizado.', { status: 401 })
 
+  // 20 messages per minute per user
+  if (!rateLimit(profile.id, 20, 60_000)) {
+    return new NextResponse('Muitas requisições. Aguarde um momento.', { status: 429 })
+  }
+
   const { id: convId } = await params
 
-  // Parse body
   let body: { message: string }
   try {
     body = await request.json()
@@ -78,146 +80,127 @@ export async function POST(
 
   const supabase = await createClient()
 
-  // Verify conversation ownership
+  // Verify ownership and get the linked aireponado conversation id (if any)
   const { data: conv } = await supabase
     .from('conversations')
-    .select('id, title')
+    .select('id, title, ai_conversation_id')
     .eq('id', convId)
     .eq('profile_id', profile.id)
     .single()
 
   if (!conv) return new NextResponse('Conversa não encontrada.', { status: 404 })
 
-  // Check if this is the first message (title still default)
-  const isFirstMessage = conv.title === 'Nova conversa'
-
-  // Save user message immediately (before streaming starts)
+  // Save user message to gfa DB immediately (optimistic — UI reads from here)
   await supabase.from('conversation_messages').insert({
     conversation_id: convId,
     role:            'user',
     content:         userMessage,
   })
 
-  // Touch updated_at on the conversation
   await supabase
     .from('conversations')
     .update({ updated_at: new Date().toISOString() })
     .eq('id', convId)
 
-  // ── Stream response ─────────────────────────────────────────────────
+  // ── Proxy to Aireponado ──────────────────────────────────────────────
   const stream = new ReadableStream({
     async start(controller) {
       try {
-        // 1. Embed user message
-        const embeddingRes = await openai.embeddings.create({
-          model: 'text-embedding-3-small',
-          input: userMessage,
-        })
-        const queryEmbedding = embeddingRes.data[0].embedding
-
-        // 2. RAG retrieval — hybrid vector + full-text search
-        const { data: rawChunks, error: rpcError } = await supabase.rpc('match_documents', {
-          query_embedding: queryEmbedding,
-          query_text:      userMessage,
-          match_threshold: 0.35,
-          match_count:     12,
-        })
-        if (rpcError) console.error('[messages] match_documents error:', rpcError.message)
-
-        const chunks: RetrievedChunk[] = (rawChunks ?? []).map(
-          (c: { content: string; source: string; section: string | null; similarity: number }) => ({
-            content:    c.content,
-            source:     c.source,
-            section:    c.section,
-            similarity: c.similarity,
-          })
-        )
-
-        const sources: MessageSource[] = chunks.map((c) => ({
-          source:     c.source,
-          section:    c.section,
-          similarity: c.similarity,
-          content:    c.content,
-        }))
-
-        // 3. Send sources event (client renders these below the message)
-        controller.enqueue(sseEvent({ type: 'sources', sources }))
-
-        // 4. Fetch recent history for context (last 10 messages, excluding the one we just saved)
-        const { data: history } = await supabase
-          .from('conversation_messages')
-          .select('role, content')
-          .eq('conversation_id', convId)
-          .order('created_at', { ascending: false })
-          .limit(11)   // 10 previous + the user message we just inserted
-
-        const historyMessages = (history ?? [])
-          .reverse()
-          .slice(0, -1)   // exclude the last item (current user message — already in prompt)
-          .map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content }))
-
-        // 5. Build system prompt and stream GPT
-        const systemPrompt = buildSystemPrompt(profile.full_name, profile.role, chunks)
-
-        const gptStream = await openai.chat.completions.create({
-          model:       'gpt-4o-mini',
-          stream:      true,
-          max_tokens:  900,
-          temperature: 0.3,
-          messages: [
-            { role: 'system',  content: systemPrompt },
-            ...historyMessages,
-            { role: 'user',    content: userMessage },
-          ],
+        const aiRes = await chatStream({
+          message:         userMessage,
+          conversation_id: conv.ai_conversation_id ?? undefined,
+          user_id:         profile.id,
+          user_name:       profile.full_name,
         })
 
-        let fullText = ''
-        for await (const chunk of gptStream) {
-          const delta = chunk.choices[0]?.delta?.content
-          if (delta) {
-            fullText += delta
-            controller.enqueue(sseEvent({ type: 'chunk', text: delta }))
-          }
+        if (!aiRes.ok || !aiRes.body) {
+          const errText = await aiRes.text().catch(() => 'Erro no serviço de IA.')
+          controller.enqueue(sseEvent({ type: 'error', message: errText }))
+          controller.close()
+          return
         }
 
-        // 6. Save completed assistant message with sources
-        await supabase.from('conversation_messages').insert({
-          conversation_id: convId,
-          role:            'assistant',
-          content:         fullText,
-          sources:         sources.length > 0 ? sources : null,
-        })
-
-        // 7. Generate title on first message
+        // Read the SSE stream from aireponado, forward relevant events to browser,
+        // and accumulate data needed to persist the assistant message.
+        const reader  = aiRes.body.getReader()
+        const decoder = new TextDecoder()
+        let buffer       = ''
+        let fullText     = ''
+        let finalSources: MessageSource[] = []
         let newTitle: string | null = null
-        if (isFirstMessage && fullText) {
-          try {
-            const titleRes = await openai.chat.completions.create({
-              model:       'gpt-4o-mini',
-              max_tokens:  12,
-              temperature: 0.5,
-              messages: [
-                {
-                  role:    'system',
-                  content: 'Gere um título curto (máximo 6 palavras, em português brasileiro) para uma conversa que começa com a mensagem abaixo. Responda apenas com o título, sem pontuação no final.',
-                },
-                { role: 'user', content: userMessage },
-              ],
-            })
-            newTitle = titleRes.choices[0]?.message?.content?.trim() ?? null
-            if (newTitle) {
-              await supabase
-                .from('conversations')
-                .update({ title: newTitle })
-                .eq('id', convId)
+        let aiConvId: string | null = null
+
+        while (true) {
+          const { value, done } = await reader.read()
+          if (done) break
+
+          buffer += decoder.decode(value, { stream: true })
+
+          const parts = buffer.split('\n\n')
+          buffer = parts.pop() ?? ''
+
+          for (const part of parts) {
+            if (!part.startsWith('data: ')) continue
+
+            let event: {
+              type:     string
+              id?:      string
+              sources?: MessageSource[]
+              text?:    string
+              title?:   string | null
+              message?: string
             }
-          } catch {
-            // Title generation is best-effort — don't fail the whole request
+            try {
+              event = JSON.parse(part.slice(6))
+            } catch {
+              continue
+            }
+
+            switch (event.type) {
+              case 'conversation_id':
+                // Capture aireponado's conversation id — store in gfa DB below
+                aiConvId = event.id ?? null
+                // Do NOT forward this event to the browser (it's internal)
+                break
+
+              case 'sources':
+                finalSources = event.sources ?? []
+                controller.enqueue(sseEvent({ type: 'sources', sources: finalSources }))
+                break
+
+              case 'chunk':
+                fullText += event.text ?? ''
+                controller.enqueue(sseEvent({ type: 'chunk', text: event.text ?? '' }))
+                break
+
+              case 'done':
+                newTitle = event.title ?? null
+                // Persist assistant message to gfa DB
+                await supabase.from('conversation_messages').insert({
+                  conversation_id: convId,
+                  role:            'assistant',
+                  content:         fullText,
+                  sources:         finalSources.length > 0 ? finalSources : null,
+                })
+                // Store aireponado conversation id + title on gfa conversation
+                await supabase
+                  .from('conversations')
+                  .update({
+                    ...(aiConvId && !conv.ai_conversation_id
+                      ? { ai_conversation_id: aiConvId }
+                      : {}),
+                    ...(newTitle ? { title: newTitle } : {}),
+                  })
+                  .eq('id', convId)
+                controller.enqueue(sseEvent({ type: 'done', title: newTitle }))
+                break
+
+              case 'error':
+                controller.enqueue(sseEvent({ type: 'error', message: event.message ?? 'Erro inesperado.' }))
+                break
+            }
           }
         }
-
-        // 8. Signal end of stream, include new title if generated
-        controller.enqueue(sseEvent({ type: 'done', title: newTitle }))
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Erro inesperado.'
         controller.enqueue(sseEvent({ type: 'error', message }))
@@ -229,9 +212,9 @@ export async function POST(
 
   return new NextResponse(stream, {
     headers: {
-      'Content-Type':            'text/event-stream; charset=utf-8',
-      'Cache-Control':           'no-cache',
-      'X-Content-Type-Options':  'nosniff',
+      'Content-Type':           'text/event-stream; charset=utf-8',
+      'Cache-Control':          'no-cache',
+      'X-Content-Type-Options': 'nosniff',
     },
   })
 }
